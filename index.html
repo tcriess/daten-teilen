@@ -1,0 +1,1054 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grenzpendeln messen</title>
+<meta name="description" content="Klickbarer Prototyp: Pendelströme Konstanz–Kreuzlingen gemeinsam berechnen, ohne Rohdaten herzugeben (MPC, PSI, Differential Privacy) – mit Testdaten.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f2f3f0; --surface:#fcfcfb; --surface-2:#eceeea; --ink:#15191b; --ink-2:#4b5357; --muted:#7d8588;
+  --line:#dde0da; --line-strong:#c3c7c0; --hover:#e6e9e4;
+  --land:#f7f7f3; --land-ch:#eff2ec; --water:#d2e3e9; --water-edge:#a9c6d1; --border-line:#a8423a;
+  --flow:#1f5f73; --over:#e34948; --under:#2a78d6;
+  --m-auto:#2a78d6; --m-pw:#eb6834; --m-oev:#1baf7a; --m-rad:#eda100; --m-fuss:#e87ba4;
+  --heat-lo:#eef4fb; --heat-hi:#104281;
+  --good:#006300; --warn-bg:#fdf3dc; --warn-ink:#7a5200;
+  --btn:#15191b; --btn-ink:#fcfcfb; --focus:#2a78d6;
+  --sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0f1112; --surface:#181b1c; --surface-2:#212527; --ink:#f1f3f1; --ink-2:#c1c6c3; --muted:#8a9190;
+    --line:#2b2f31; --line-strong:#3b4043; --hover:#262a2c;
+    --land:#1b1e1f; --land-ch:#1e2220; --water:#18313b; --water-edge:#285261; --border-line:#e0786d;
+    --flow:#7cc2d6; --over:#e66767; --under:#3987e5;
+    --m-auto:#3987e5; --m-pw:#d95926; --m-oev:#199e70; --m-rad:#c98500; --m-fuss:#d55181;
+    --heat-lo:#1d2733; --heat-hi:#9ec5f4;
+    --good:#0ca30c; --warn-bg:#3a2f14; --warn-ink:#f0c870;
+    --btn:#f1f3f1; --btn-ink:#15191b; --focus:#6da7ec;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f1112; --surface:#181b1c; --surface-2:#212527; --ink:#f1f3f1; --ink-2:#c1c6c3; --muted:#8a9190;
+  --line:#2b2f31; --line-strong:#3b4043; --hover:#262a2c;
+  --land:#1b1e1f; --land-ch:#1e2220; --water:#18313b; --water-edge:#285261; --border-line:#e0786d;
+  --flow:#7cc2d6; --over:#e66767; --under:#3987e5;
+  --m-auto:#3987e5; --m-pw:#d95926; --m-oev:#199e70; --m-rad:#c98500; --m-fuss:#d55181;
+  --heat-lo:#1d2733; --heat-hi:#9ec5f4;
+  --good:#0ca30c; --warn-bg:#3a2f14; --warn-ink:#f0c870;
+  --btn:#f1f3f1; --btn-ink:#15191b; --focus:#6da7ec;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:20px;padding-block:0 48px}
+h1,h2,h3{font-stretch:85%;text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:28px;font-weight:750;letter-spacing:-.01em}
+h2{font-size:19px;font-weight:700}
+h3{font-size:15px;font-weight:700}
+p{margin:0}
+.mono{font-family:var(--mono);font-size:12.5px}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.sub{color:var(--ink-2)}
+.eyebrow{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+/* header */
+header.top{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-end;justify-content:space-between;padding-block:24px 16px;border-bottom:1px solid var(--line)}
+.title-block{display:grid;gap:6px;max-width:640px}
+.title-block .eyebrow{display:flex;gap:10px;align-items:center}
+.badge-test{background:var(--warn-bg);color:var(--warn-ink);border-radius:3px;padding:1px 7px;letter-spacing:.04em}
+.controls{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-end}
+.ctl{display:grid;gap:4px}
+.ctl label{font-size:12px;color:var(--ink-2);font-weight:600}
+.ctl-row{display:flex;gap:8px;align-items:center}
+input[type=number]{width:84px;padding:6px 8px;border:1px solid var(--line-strong);border-radius:4px;background:var(--surface)}
+input[type=range]{accent-color:var(--ink);width:180px}
+.eps-val{font-family:var(--mono);font-size:13px;min-width:58px}
+.btn{border:1px solid var(--line-strong);background:var(--surface);border-radius:4px;padding:6px 12px;cursor:pointer;font-weight:600;font-size:13.5px}
+.btn:hover{background:var(--hover)}
+.btn.primary{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
+.btn.primary:hover{opacity:.88}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* tabs */
+nav.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:24px}
+nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:12px 14px 9px;font-weight:650;font-size:14.5px;color:var(--ink-2);cursor:pointer;white-space:nowrap;font-stretch:90%}
+nav.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--ink)}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs .tnum{font-family:var(--mono);font-size:11px;color:var(--muted);margin-right:6px}
+
+/* generic */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px}
+.panel-head{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.stack{display:grid;gap:16px}
+.lede{max-width:72ch;color:var(--ink-2);margin-bottom:20px}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:5px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:5px 11px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink-2);border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--surface)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;padding:3px 10px 3px 8px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--ink-2)}
+.chip[aria-pressed=false]{opacity:.5}
+.chip[aria-pressed=false] .sw{background:transparent!important;box-shadow:inset 0 0 0 1.5px var(--muted)}
+.sw{width:10px;height:10px;border-radius:2px;display:inline-block;flex:none}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;font-weight:600;color:var(--ink-2)}
+td.r,th.r{text-align:right}
+.tbl-scroll{overflow-x:auto}
+.note{font-size:12.5px;color:var(--ink-2)}
+.pill{display:inline-block;font-size:11.5px;font-weight:650;border-radius:3px;padding:1px 6px;background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.pill.ok{color:var(--good)}
+
+/* overview */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:4px;align-content:start}
+.kpi .lbl{font-size:12.5px;color:var(--ink-2);font-weight:600}
+.kpi .val{font-size:30px;font-weight:700;font-stretch:85%;line-height:1.1}
+.kpi .det{font-size:12.5px;color:var(--ink-2)}
+.kpi .det b{color:var(--ink);font-weight:650}
+.ov-grid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:16px;align-items:start}
+.map-tools{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:10px}
+.map-box{position:relative;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--land)}
+.map-box svg{display:block;width:100%;height:auto}
+.map-legend{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:12.5px;color:var(--ink-2);margin-top:8px}
+.map-legend .ln{display:inline-block;width:22px;height:0;border-top:3px solid var(--flow);border-radius:2px;vertical-align:middle;margin-right:6px}
+.zlabel{font-family:var(--sans);font-size:12px;font-weight:600;fill:var(--ink);paint-order:stroke;stroke:var(--land);stroke-width:3.5px;stroke-linejoin:round;pointer-events:none}
+.clabel{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.14em;fill:var(--muted);pointer-events:none}
+.flow-hit{cursor:pointer}
+.ms-row{display:grid;grid-template-columns:86px 1fr;gap:10px;align-items:center}
+.ms-row .nm{font-size:12.5px;font-weight:650}
+.ms-bar{display:flex;gap:2px;height:22px}
+.ms-bar span{display:block;height:100%;min-width:0}
+.ms-bar span:first-child{border-radius:4px 0 0 4px}
+.ms-bar span:last-child{border-radius:0 4px 4px 0}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--ink-2)}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.insights{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.insights li{display:grid;gap:3px;padding:10px 12px;border-left:3px solid var(--line-strong);background:var(--surface-2);border-radius:0 4px 4px 0}
+.insights .ih{font-weight:650;font-size:13.5px}
+.insights .ib{font-size:12.5px;color:var(--ink-2)}
+.cmp{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px}
+.cmp b{font-weight:650}
+
+/* holders */
+.holders{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.holder{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:10px;align-content:start}
+.holder .hh{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.flag{font-family:var(--mono);font-size:11px;border:1px solid var(--line-strong);border-radius:3px;padding:0 5px;color:var(--ink-2);white-space:nowrap}
+.holder table td,.holder table th{padding:3px 6px;font-size:12px}
+.holder table td{font-family:var(--mono);font-size:11.5px}
+.leaves{display:grid;gap:4px;font-size:12.5px}
+.leaves .k{font-size:11px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.method{display:inline-block;font-size:11.5px;font-weight:650;border-radius:3px;padding:1px 7px;border:1px solid var(--line-strong)}
+
+/* ebene 1 */
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.ss td.share{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.ss td.own{font-family:var(--mono);font-size:12.5px;font-weight:500}
+.ss td.own .lock{font-family:var(--sans);font-size:10.5px;color:var(--muted);display:block;font-weight:500}
+.ss tr.sum td{font-weight:650;border-top:1px solid var(--line-strong)}
+.steps{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.stepinfo{font-size:13px;color:var(--ink-2);min-height:40px}
+.heat-wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.heat{border-collapse:separate;border-spacing:2px;width:100%;table-layout:fixed}
+.heat td,.heat th{border:0;padding:0;font-size:10.5px;text-align:center}
+.heat th{color:var(--ink-2);font-weight:600;padding:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.heat th.rh{text-align:right;padding-right:6px;width:84px}
+.heat td{height:26px;border-radius:2px;font-family:var(--mono);font-size:10.5px;cursor:default}
+.spark{display:block;width:100%;height:auto}
+
+/* ebene 2 */
+.psi-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.party{border:1px solid var(--line);border-radius:5px;padding:12px;display:grid;gap:8px;align-content:start;background:var(--surface)}
+.party .who{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.rows{display:grid;gap:3px;font-family:var(--mono);font-size:11.5px}
+.rows div{display:grid;grid-template-columns:minmax(0,9.5em) 1.2em minmax(0,1fr);gap:4px;white-space:nowrap}
+.rows div span{overflow:hidden;text-overflow:ellipsis}
+.rows .arr{color:var(--muted);text-align:center}
+ol.proto{margin:0;padding:0;list-style:none;display:grid;gap:6px;counter-reset:s}
+ol.proto li{counter-increment:s;display:grid;grid-template-columns:24px 1fr;gap:8px;font-size:13px;color:var(--muted)}
+ol.proto li::before{content:counter(s);display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line-strong);font-size:11.5px;font-weight:700}
+ol.proto li.done{color:var(--ink-2)}
+ol.proto li.done::before{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+ol.proto li.next{color:var(--ink)}
+ol.proto li.next::before{border-color:var(--ink)}
+.progress{height:4px;background:var(--surface-2);border-radius:2px;overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:var(--ink);transition:width .1s}
+.sees{font-size:12.5px;color:var(--ink-2);border-top:1px solid var(--line);padding-top:8px}
+.hash-out{display:grid;gap:4px;font-family:var(--mono);font-size:12px}
+.hash-out div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:4px 0;border-bottom:1px solid var(--line)}
+.hash-out .h{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-2)}
+.hash-out .p{font-weight:600;min-width:9em;text-align:right}
+.hash-out .p.found{color:var(--over)}
+.callout{background:var(--warn-bg);color:var(--warn-ink);border-radius:4px;padding:10px 12px;font-size:13px}
+
+#tip{position:fixed;z-index:20;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--line-strong);border-radius:5px;padding:8px 10px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,.14);max-width:280px;line-height:1.4}
+#tip .tt{font-weight:700;margin-bottom:3px}
+#tip table td{padding:1px 4px;border:0;font-variant-numeric:tabular-nums}
+footer{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);display:grid;gap:4px}
+
+@media (max-width:1050px){
+  .ov-grid,.two{grid-template-columns:minmax(0,1fr)}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:620px){
+  .wrap{padding-inline:16px}
+  .kpis{grid-template-columns:minmax(0,1fr)}
+  .heat-wrap,.psi-cols{grid-template-columns:minmax(0,1fr)}
+  input[type=range]{width:140px}
+  h1{font-size:23px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="title-block">
+      <div class="eyebrow">Crossing Forward 2026 <span class="badge-test">Testdaten</span></div>
+      <h1>Pendeln über die Grenze messen, ohne Daten herzugeben</h1>
+      <p class="sub">Was Konstanz und Kreuzlingen wüssten, wenn Zählstellen, Verkehrsbetriebe, Parkhäuser und Arbeitgeber gemeinsam rechnen. Die Rohdaten bleiben bei ihren Haltern.</p>
+    </div>
+    <div class="controls">
+      <div class="ctl">
+        <label for="seed">Testdaten (Startwert)</label>
+        <div class="ctl-row">
+          <input id="seed" type="number" value="2026" min="1" max="999999">
+          <button class="btn" id="reroll" type="button">Neu würfeln</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <label for="eps">Datenschutz-Budget ε je Person</label>
+        <div class="ctl-row">
+          <input id="eps" type="range" min="0" max="100" step="1" value="65">
+          <span class="eps-val num" id="epsVal">ε = 1,0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Ansichten">
+    <button role="tab" id="tab-ueberblick" aria-selected="true" data-tab="ueberblick">Überblick</button>
+    <button role="tab" id="tab-halter" aria-selected="false" data-tab="halter">Datenhalter</button>
+    <button role="tab" id="tab-ebene1" aria-selected="false" data-tab="ebene1"><span class="tnum">E1</span>Ohne Verknüpfung: Summen</button>
+    <button role="tab" id="tab-ebene2" aria-selected="false" data-tab="ebene2"><span class="tnum">E2</span>Mit Verknüpfung: Schnittmengen</button>
+  </nav>
+
+  <!-- ÜBERBLICK -->
+  <section id="view-ueberblick" role="tabpanel" aria-labelledby="tab-ueberblick">
+    <div class="kpis" id="kpis"></div>
+    <div class="ov-grid">
+      <div class="panel">
+        <div class="map-tools">
+          <div class="seg" id="scSeg" role="group" aria-label="Szenario">
+            <button type="button" data-v="truth" aria-pressed="false">Wahrheit</button>
+            <button type="button" data-v="e1" aria-pressed="false">Ebene 1</button>
+            <button type="button" data-v="e12" aria-pressed="true">Ebene 1 + 2</button>
+          </div>
+          <div class="seg" id="dirSeg" role="group" aria-label="Richtung">
+            <button type="button" data-v="0" aria-pressed="true">DE → CH</button>
+            <button type="button" data-v="1" aria-pressed="false">CH → DE</button>
+          </div>
+          <label class="note" style="display:inline-flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="diffChk"> Abweichung zur Wahrheit</label>
+        </div>
+        <div class="map-tools">
+          <div class="chips" id="modeChips" aria-label="Verkehrsmittel"></div>
+          <div class="ctl-row note"><label for="thr">Ströme ab</label><input id="thr" type="range" min="5" max="80" value="20" style="width:110px"><span id="thrVal" class="num">20</span></div>
+        </div>
+        <div class="map-box" id="mapBox"><svg id="map" viewBox="0 0 1000 690" role="img" aria-label="Schematische Karte der Pendelströme zwischen Landkreis Konstanz und Thurgau"></svg></div>
+        <div class="map-legend" id="mapLegend"></div>
+      </div>
+      <div class="stack">
+        <div class="panel">
+          <div class="panel-head"><h2>Verkehrsmittel an der Grenze</h2><span class="note" id="msDir">DE → CH, Morgenspitze</span></div>
+          <div class="legend" id="msLegend" style="margin-bottom:12px"></div>
+          <div class="stack" id="msBars" style="gap:10px"></div>
+          <details style="margin-top:12px"><summary class="note" style="cursor:pointer">Als Tabelle</summary><div class="tbl-scroll" id="msTable" style="margin-top:8px"></div></details>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Was erst die Verknüpfung zeigt</h2></div>
+          <ul class="insights" id="insights"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATENHALTER -->
+  <section id="view-halter" role="tabpanel" aria-labelledby="tab-halter" hidden>
+    <p class="lede">Jeder Halter sieht nur seinen Ausschnitt. Die Tabellen zeigen, was im Haus liegt (aus den Testdaten), darunter, was bei der gemeinsamen Berechnung das Haus verlässt. Kein Halter gibt eine Liste heraus, die ein anderer lesen könnte.</p>
+    <div class="holders" id="holders"></div>
+  </section>
+
+  <!-- EBENE 1 -->
+  <section id="view-ebene1" role="tabpanel" aria-labelledby="tab-ebene1" hidden>
+    <p class="lede">Autos, Bahnfahrgäste, Radfahrende und Fußgänger an der Grenze sind verschiedene Menschen. Ihre Zählungen addiert ergeben die Verkehrsmittelanteile, ohne dass irgendetwas verknüpft wird. Die sichere Summe sorgt nur dafür, dass Bahn und Bus ihre Fahrgastzahlen nicht einzeln offenlegen. Aus Randsummen schätzt IPF dann die Quelle-Ziel-Ströme.</p>
+    <div class="two">
+      <div class="panel">
+        <div class="panel-head"><h2>Sichere Summe über drei Rechenstellen</h2>
+          <div class="seg" id="ssDir" role="group" aria-label="Richtung"><button type="button" data-v="0" aria-pressed="true">DE → CH</button><button type="button" data-v="1" aria-pressed="false">CH → DE</button></div>
+        </div>
+        <div class="steps" style="margin-bottom:10px">
+          <button class="btn primary" id="ssNext" type="button">Werte aufteilen</button>
+          <button class="btn" id="ssReset" type="button">Zurücksetzen</button>
+        </div>
+        <p class="stepinfo" id="ssInfo"></p>
+        <div class="tbl-scroll"><table class="ss" id="ssTable"></table></div>
+        <div id="ssResult" style="margin-top:14px"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Quelle-Ziel-Matrix aus Randsummen</h2><span class="note">DE → CH, alle Verkehrsmittel</span></div>
+        <p class="note" style="margin-bottom:10px">Randsummen: Grenzgänger nach Wohngemeinde (BFS-artig), Beschäftigte nach Arbeitsort, Verkehrsmittel aus der sicheren Summe. Startwerte: einfaches Distanzmodell. Iteratives proportionales Anpassen (IPF) passt die Matrix an alle drei an.</p>
+        <div class="ctl-row" style="margin-bottom:12px;flex-wrap:wrap">
+          <label for="ipfIt" class="note" style="font-weight:600">Iteration</label>
+          <input id="ipfIt" type="range" min="0" max="20" value="20" style="width:200px">
+          <span class="num mono" id="ipfItVal">20</span>
+          <span class="note" id="ipfErr"></span>
+        </div>
+        <div class="heat-wrap">
+          <div><div class="eyebrow" style="margin-bottom:4px">Wahrheit (nur im Generator)</div><div class="tbl-scroll"><table class="heat" id="heatTrue"></table></div></div>
+          <div><div class="eyebrow" style="margin-bottom:4px">Schätzung Ebene 1</div><div class="tbl-scroll"><table class="heat" id="heatEst"></table></div></div>
+        </div>
+        <div style="margin-top:14px">
+          <div class="eyebrow" style="margin-bottom:4px">Falsch zugeordnete Pendelnde je Iteration</div>
+          <svg class="spark" id="ipfSpark" viewBox="0 0 520 90"></svg>
+        </div>
+        <p class="note" style="margin-top:8px" id="ipfNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EBENE 2 -->
+  <section id="view-ebene2" role="tabpanel" aria-labelledby="tab-ebene2" hidden>
+    <p class="lede">Wo Daten je Person vorliegen, zählt private Schnittmengenberechnung (PSI) nur, wie viele Einträge zwei Listen gemeinsam haben, getrennt nach Wohnort-Gruppe. Keine Seite sieht die Liste der anderen. Veröffentlicht wird jede Zahl erst mit kontrolliertem Rauschen (Differential Privacy).</p>
+    <div class="two">
+      <div class="panel">
+        <div class="panel-head"><h2>Schnittmenge zählen</h2></div>
+        <div class="map-tools">
+          <div class="seg" id="psiEmp" role="group" aria-label="Arbeitgeber"><button type="button" data-v="A" aria-pressed="true">Arbeitgeber A</button><button type="button" data-v="B" aria-pressed="false">Arbeitgeber B</button></div>
+          <span class="note">×</span>
+          <div class="seg" id="psiPartner" role="group" aria-label="Gegenstelle"><button type="button" data-v="park" aria-pressed="true">Parkhäuser (Kennzeichen)</button><button type="button" data-v="vb" aria-pressed="false">Verkehrsbetrieb (Jobticket)</button></div>
+        </div>
+        <ol class="proto" id="psiSteps"></ol>
+        <div class="steps" style="margin-block:12px 8px">
+          <button class="btn primary" id="psiNext" type="button">Schritt 1 ausführen</button>
+          <button class="btn" id="psiAll" type="button">Alle Schritte</button>
+          <button class="btn" id="psiReset" type="button">Zurücksetzen</button>
+        </div>
+        <div class="progress" aria-hidden="true"><span id="psiProg"></span></div>
+        <div class="psi-cols" style="margin-top:12px">
+          <div class="party"><div class="who"><h3 id="pEmpName">Arbeitgeber A</h3><span class="flag">CH</span></div><div class="rows" id="pEmpRows"></div><div class="sees" id="pEmpSees"></div></div>
+          <div class="party"><div class="who"><h3 id="pParName">Parkhäuser Konstanz</h3><span class="flag" id="pParFlag">DE</span></div><div class="rows" id="pParRows"></div><div class="sees" id="pParSees"></div></div>
+        </div>
+        <div id="psiResult" style="margin-top:14px"></div>
+      </div>
+      <div class="stack">
+        <div class="panel">
+          <div class="panel-head"><h2>Schutz gegen Genauigkeit</h2><span class="note" id="epsNote"></span></div>
+          <p class="note" style="margin-bottom:8px">Fehler der Quelle-Ziel-Matrix (Wohnort × Arbeitsort × Verkehrsmittel), gemittelt über 8 Rauschziehungen. Kleines ε heißt mehr Rauschen. Bei sehr kleinem ε verschlechtert das Rauschen die Schätzung sogar unter Ebene 1. Wo der Schnittpunkt liegt, entscheidet, welches Budget sich lohnt.</p>
+          <div class="legend" id="curveLegend" style="margin-bottom:6px"></div>
+          <div style="position:relative"><svg id="curve" class="spark" viewBox="0 0 560 250" role="img" aria-label="Fehler über epsilon"></svg></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Warum nicht einfach hashen?</h2></div>
+          <p class="note" style="margin-bottom:10px">Ein Parkhaus „pseudonymisiert“ seine Kennzeichen mit SHA-256 und gibt die Liste weiter. Kennzeichen haben aber nur wenige Millionen mögliche Werte. Der Browser probiert alle Kennzeichen des Landkreises Konstanz durch (KN-A 1 bis KN-ZZ 9999).</p>
+          <div class="hash-out" id="hashList"></div>
+          <div class="steps" style="margin-block:12px 8px"><button class="btn primary" id="hashGo" type="button">Kennzeichen zurückrechnen</button></div>
+          <div class="progress" aria-hidden="true"><span id="hashProg"></span></div>
+          <p class="note" id="hashInfo" style="margin-top:8px"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Alle Zahlen stammen aus einem Zufallsgenerator mit rund 5 000 Pendelnden, grob an Grenzgängerzahlen der Region ausgerichtet. Orte real, Arbeitgeber und Werte erfunden. Die Karte ist schematisch: Der Kernraum Konstanz–Kreuzlingen ist vergrößert.</span>
+    <span>Verfahren im Prototyp: additive Geheimteilung (mod 2³²), IPF, ECDH-artige PSI in einer Demo-Gruppe (Primzahl 2⁸⁹−1, im Pilot Curve25519), Laplace-Rauschen. Für den Pilot: MP-SPDZ oder Federated Secure Computing, openmined-psi, OpenDP.</span>
+  </footer>
+</div>
+<div id="tip" hidden></div>
+
+<script id="model">
+// ---------- Zufall ----------
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function gauss(r){let u=0;while(!u)u=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*r())}
+function pick(r,w){let s=0;for(const x of w)s+=x;let v=r()*s;for(let i=0;i<w.length;i++){v-=w[i];if(v<0)return i}return w.length-1}
+
+// ---------- Geografie ----------
+const ZONES=[
+ {id:'kn_alt',name:'Konstanz Altstadt',short:'KN Altstadt',side:'DE',lat:47.6605,lon:9.1745,home:5,work:25,rail:1},
+ {id:'kn_par',name:'Konstanz Paradies',short:'KN Paradies',side:'DE',lat:47.6600,lon:9.1610,home:6,work:5,rail:0},
+ {id:'kn_pet',name:'Konstanz Petershausen',short:'Petershausen',side:'DE',lat:47.6700,lon:9.1800,home:12,work:15,rail:1},
+ {id:'kn_wol',name:'Konstanz Wollmatingen',short:'Wollmatingen',side:'DE',lat:47.6870,lon:9.1450,home:9,work:18,rail:1},
+ {id:'kn_egg',name:'Konstanz Egg / Uni',short:'Egg / Uni',side:'DE',lat:47.6900,lon:9.1880,home:4,work:20,rail:0},
+ {id:'allens',name:'Allensbach',short:'Allensbach',side:'DE',lat:47.7150,lon:9.0700,home:6,work:3,rail:1},
+ {id:'radolf',name:'Radolfzell',short:'Radolfzell',side:'DE',lat:47.7400,lon:8.9700,home:8,work:7,rail:1},
+ {id:'singen',name:'Singen',short:'Singen',side:'DE',lat:47.7600,lon:8.8400,home:7,work:7,rail:1},
+ {id:'kreuz',name:'Kreuzlingen',short:'Kreuzlingen',side:'CH',lat:47.6450,lon:9.1750,home:45,work:38,rail:1},
+ {id:'taeger',name:'Tägerwilen',short:'Tägerwilen',side:'CH',lat:47.6520,lon:9.1350,home:12,work:8,rail:1},
+ {id:'bottig',name:'Bottighofen',short:'Bottighofen',side:'CH',lat:47.6380,lon:9.2100,home:8,work:5,rail:1},
+ {id:'muenst',name:'Münsterlingen',short:'Münsterlingen',side:'CH',lat:47.6310,lon:9.2350,home:5,work:16,rail:1},
+ {id:'weinf',name:'Weinfelden',short:'Weinfelden',side:'CH',lat:47.5670,lon:9.1080,home:9,work:12,rail:1},
+ {id:'frauen',name:'Frauenfeld',short:'Frauenfeld',side:'CH',lat:47.5570,lon:8.8980,home:5,work:9,rail:1},
+ {id:'amris',name:'Amriswil',short:'Amriswil',side:'CH',lat:47.5470,lon:9.2970,home:5,work:6,rail:1},
+];
+const ZI=Object.fromEntries(ZONES.map((z,i)=>[z.id,i]));
+const DIRS=[{key:'DECH',label:'DE → CH',from:'DE',to:'CH',n:3900},{key:'CHDE',label:'CH → DE',from:'CH',to:'DE',n:1100}];
+for(const D of DIRS){D.H=[];D.W=[];ZONES.forEach((z,i)=>{if(z.side===D.from)D.H.push(i);if(z.side===D.to)D.W.push(i)})}
+const MODES=[{k:'auto',label:'Auto'},{k:'pw',label:'Park & Walk'},{k:'oev',label:'Bus/Bahn'},{k:'rad',label:'Rad'},{k:'fuss',label:'Zu Fuß'}];
+const NM=5, MI=Object.fromEntries(MODES.map((m,i)=>[m.k,i]));
+const CROSS={autobahn:'Autobahnzoll',emmis:'Emmishofer Zoll',tor:'Kreuzlinger Tor',taeg:'Übergang Tägerwilen',venedig:'Klein Venedig'};
+const EMP={A:{name:'Arbeitgeber A',desc:'Industrie, Kreuzlingen',zone:'kreuz'},B:{name:'Arbeitgeber B',desc:'Spital, Münsterlingen',zone:'muenst'}};
+const CORE=new Set(['kn_alt','kn_par']);
+const FAR=new Set(['singen','radolf','allens','kn_wol','frauen','weinf','amris']);
+// echte Werte im Generator vs. Annahmen der Schätzung
+const TRUE_BG={veh:.28,occ:1.12,bahn:.18,bus:.20,rad:.08,fuss:.35};
+const ASSUME={veh:.25,occ:1.10,oev:.15,rad:.10,fuss:.30};
+function km(a,b){const A=ZONES[a],B=ZONES[b];return Math.hypot((A.lon-B.lon)*75.1,(A.lat-B.lat)*111.2)}
+function dist(a,b){return km(a,b)*1.3+0.5}
+const cell=(nw,h,w,m)=>(h*nw+w)*NM+m;
+
+// ---------- Generator ----------
+function buildModel(seed){
+  const r=mulberry32((seed>>>0)||1);
+  const used=new Set(), L='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const plateDE=()=>{let p;do{let s='';const n=r()<.45?1:2;for(let i=0;i<n;i++)s+=L[Math.floor(r()*26)];p='KN-'+s+' '+(1+Math.floor(r()*9999))}while(used.has(p));used.add(p);return p};
+  const plateCH=()=>{let p;do{p='TG '+(1+Math.floor(r()*199999))}while(used.has(p));used.add(p);return p};
+  const plateOther=()=>{const pre=['ZH ','SG ','SH ','AR ','FN-','RV-','VS-','S-'];let p;do{const q=pre[Math.floor(r()*pre.length)];p=q.endsWith('-')?q+L[Math.floor(r()*26)]+L[Math.floor(r()*26)]+' '+(1+Math.floor(r()*9999)):q+(1+Math.floor(r()*299999))}while(used.has(p));used.add(p);return p};
+  const usedJT=new Set();
+  const jtId=()=>{let j;do{j='JT-'+String(100000+Math.floor(r()*900000))}while(usedJT.has(j));usedJT.add(j);return j};
+  const persons=[];let pnr=10000;
+  for(const D of DIRS){
+    const cells=[],cum=[];let s=0;
+    for(const h of D.H)for(const w of D.W){
+      const d=dist(h,w);let p=ZONES[h].home*ZONES[w].work*Math.exp(-d/14)*Math.exp(.45*gauss(r));
+      if(ZONES[w].id==='muenst'&&(ZONES[h].id==='radolf'||ZONES[h].id==='singen'))p*=3.2; // Spital-Personal wohnt günstiger im Westen
+      s+=p;cells.push([h,w]);cum.push(s);
+    }
+    for(let i=0;i<D.n;i++){
+      const x=r()*s;let lo=0,hi=cum.length-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]>x)hi=m;else lo=m+1}
+      const [h,w]=cells[lo],zh=ZONES[h],zw=ZONES[w],d=dist(h,w);
+      let emp=null;
+      if(D.key==='DECH'){
+        if(zw.id==='kreuz'&&r()<.45)emp='A';
+        if(zw.id==='muenst'&&r()<((zh.id==='radolf'||zh.id==='singen')?.95:.7))emp='B';
+      }
+      const rail=zh.rail&&zw.rail;
+      const wt=[
+        (D.key==='DECH'?1.0:1.4)+.02*d,
+        (D.key==='DECH'&&zw.id==='kreuz'&&!CORE.has(zh.id))?(emp==='A'?.5:.35):0,
+        (.2+(rail?.45:0)+(d>12?.15:0))*(emp==='B'?1.6:1),
+        1.3*Math.exp(-d/5),
+        d<3.5?1.6*(1-d/3.5):0];
+      const mode=MODES[pick(r,wt)].k;
+      let cross;
+      if(mode==='auto'){
+        if(FAR.has(zh.id)||FAR.has(zw.id))cross=r()<.7?'autobahn':'emmis';
+        else if(['taeger','kn_par'].includes(zh.id)||['taeger','kn_par'].includes(zw.id))cross=r()<.6?'taeg':'emmis';
+        else cross=r()<.5?'emmis':'tor';
+      }else if(mode==='oev'){
+        const local=['kn_alt','kn_par','kn_pet','kreuz','taeger','kn_egg'];
+        cross=(local.includes(zh.id)&&local.includes(zw.id)&&r()<.65)?'bus':'bahn';
+      }else if(mode==='rad'){
+        cross=(['taeger','kn_par'].includes(zh.id)||['taeger','kn_par'].includes(zw.id))&&r()<.6?'taeg':['venedig','venedig','tor','emmis','tor'][Math.floor(r()*5)];
+      }else{cross=['tor','tor','emmis','venedig','tor'][Math.floor(r()*5)]}
+      const side=zh.side;
+      const plate=(mode==='auto'||mode==='pw'||r()<.55)?(side==='DE'?plateDE():plateCH()):null;
+      const regPlate=(emp&&plate&&r()<.9)?plate:null;
+      let jt=null;
+      if(emp==='A')jt=(mode==='oev'?r()<.7:r()<.12)?jtId():null;
+      if(emp==='B')jt=(mode==='oev'?r()<.9:r()<.45)?jtId():null;
+      persons.push({pnr:'P'+(pnr++),dir:D.key,h,w,emp,mode,cross,plate,regPlate,jt});
+    }
+  }
+  // --- Sichten der Halter ---
+  const hhmm=x=>{const h=Math.floor(x),m=Math.floor((x-h)*60);return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')};
+  const parkhaus=[];
+  for(const p of persons){
+    if(p.mode==='pw')parkhaus.push({plate:p.plate,ein:6.4+r()*2.4,dauer:8+r()*2.2});
+    else if(p.plate&&r()<.07)parkhaus.push({plate:p.plate,ein:9+r()*9,dauer:.5+r()*3});
+  }
+  for(let i=0;i<2600;i++){
+    const q=r(),plate=q<.45?plateCH():q<.7?plateDE():plateOther();
+    parkhaus.push(r()<.15?{plate,ein:6.4+r()*2.6,dauer:7+r()*3}:{plate,ein:8+r()*11,dauer:.4+r()*4});
+  }
+  for(let i=parkhaus.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[parkhaus[i],parkhaus[j]]=[parkhaus[j],parkhaus[i]]}
+  parkhaus.forEach(e=>{e.einS=hhmm(e.ein);e.dauerS=e.dauer.toFixed(1).replace('.',',')+' h'});
+  const parkCommute=[...new Set(parkhaus.filter(e=>e.ein>=6&&e.ein<=9.5&&e.dauer>=6).map(e=>e.plate))];
+  const taps=[];
+  for(const p of persons)if(p.jt){const n=p.mode==='oev'?4+Math.floor(r()*6):(r()<.15?1+Math.floor(r()*3):0);taps.push({jt:p.jt,n})}
+  for(let i=0;i<1800;i++)taps.push({jt:jtId(),n:Math.floor(r()*11)});
+  for(let i=taps.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[taps[i],taps[j]]=[taps[j],taps[i]]}
+  const tapCommute=[...new Set(taps.filter(t=>t.n>=3).map(t=>t.jt))];
+  const hr={A:persons.filter(p=>p.emp==='A'),B:persons.filter(p=>p.emp==='B')};
+
+  // --- Zählungen ---
+  const counters={};
+  for(const D of DIRS){
+    const raw={veh:{autobahn:0,emmis:0,tor:0,taeg:0},bahn:0,bus:0,rad:{venedig:0,tor:0,emmis:0,taeg:0},fuss:{tor:0,emmis:0,venedig:0}};
+    for(const p of persons){if(p.dir!==D.key)continue;
+      if(p.mode==='auto')raw.veh[p.cross]++;else if(p.mode==='oev')raw[p.cross]++;else if(p.mode==='rad')raw.rad[p.cross]++;else raw.fuss[p.cross]++}
+    const c={veh:{},rad:{},fuss:{}};
+    for(const k in raw.veh)c.veh[k]=Math.round(raw.veh[k]/TRUE_BG.occ*(1+TRUE_BG.veh));
+    for(const k in raw.rad)c.rad[k]=Math.round(raw.rad[k]*(1+TRUE_BG.rad));
+    for(const k in raw.fuss)c.fuss[k]=Math.round(raw.fuss[k]*(1+TRUE_BG.fuss));
+    c.bahn=Math.round(raw.bahn*(1+TRUE_BG.bahn));c.bus=Math.round(raw.bus*(1+TRUE_BG.bus));
+    const sum=o=>Object.values(o).reduce((a,b)=>a+b,0);
+    c.holders=[
+      {id:'kfz',name:'Kfz-Zählstellen',unit:'Fahrzeuge',mode:'auto',v:sum(c.veh)},
+      {id:'bahn',name:'Bahn',unit:'Fahrgäste',mode:'oev',v:c.bahn},
+      {id:'bus',name:'Bus',unit:'Fahrgäste',mode:'oev',v:c.bus},
+      {id:'rad',name:'Radzählung',unit:'Räder',mode:'rad',v:sum(c.rad)},
+      {id:'fuss',name:'Fußzählung',unit:'Personen',mode:'fuss',v:sum(c.fuss)}];
+    counters[D.key]=c;
+  }
+
+  // --- Wahrheit, Randsummen ---
+  const truth={},rowM={},colM={};
+  for(const D of DIRS){
+    const nh=D.H.length,nw=D.W.length,T=new Float64Array(nh*nw*NM);
+    for(const p of persons)if(p.dir===D.key)T[cell(nw,D.H.indexOf(p.h),D.W.indexOf(p.w),MI[p.mode])]++;
+    truth[D.key]=T;
+    const row=new Array(nh).fill(0),col=new Array(nw).fill(0);
+    for(let h=0;h<nh;h++)for(let w=0;w<nw;w++)for(let m=0;m<NM;m++){const v=T[cell(nw,h,w,m)];row[h]+=v;col[w]+=v}
+    rowM[D.key]=row.map(v=>Math.round(v/5)*5);colM[D.key]=col.map(v=>Math.round(v/5)*5);
+  }
+  const M={seed,persons,parkhaus,parkCommute,taps,tapCommute,hr,counters,truth,rowM,colM};
+  M.N=persons.length;
+
+  // --- Ebene 1 ---
+  M.e1={};M.e1Modes={};M.snaps=[];M.snapErr=[];
+  for(const D of DIRS){
+    const modes=e1Modes(counters[D.key]);M.e1Modes[D.key]=modes;
+    const nh=D.H.length,nw=D.W.length;
+    const snap=D.key==='DECH'?(x,it)=>{const g=new Float64Array(nh*nw);for(let h=0;h<nh;h++)for(let w=0;w<nw;w++){let s=0;for(let m=0;m<NM;m++)s+=x[cell(nw,h,w,m)];g[h*nw+w]=s}M.snaps[it]=g;M.snapErr[it]=tae(x,truth.DECH)/(2*D.n)}:null;
+    M.e1[D.key]=ipf3(seedTensor(D,false),rowM[D.key],colM[D.key],modes,nh,nw,20,snap);
+  }
+  // --- Ebene 2: echte Schnittmengen je Arbeitgeber und Wohnort ---
+  const parkSet=new Set(parkCommute),tapSet=new Set(tapCommute),D0=DIRS[0];
+  M.emp={};
+  for(const e of ['A','B']){
+    M.emp[e]=D0.H.map(()=>({total:0,auto:0,pw:0,jt:0,jtHeld:0}));
+    for(const p of hr[e]){const c=M.emp[e][D0.H.indexOf(p.h)];c.total++;if(p.mode==='auto')c.auto++;if(p.regPlate&&parkSet.has(p.regPlate))c.pw++;if(p.jt){c.jtHeld++;if(tapSet.has(p.jt))c.jt++}}
+  }
+  M.errE1=errorOf(M,M.e1);
+  M.curve=EPS_GRID.map(eps=>{let s=0;for(let d=0;d<8;d++)s+=errorOf(M,estimateE12(M,eps,d).E);return {eps,err:s/8}});
+  return M;
+}
+const EPS_GRID=[.05,.07,.1,.15,.2,.3,.5,.7,1,1.5,2,3,5];
+
+function e1Modes(c){
+  const veh=c.holders[0].v,oev=c.holders[1].v+c.holders[2].v,rad=c.holders[3].v,fuss=c.holders[4].v;
+  return [veh/(1+ASSUME.veh)*ASSUME.occ,0,oev/(1+ASSUME.oev),rad/(1+ASSUME.rad),fuss/(1+ASSUME.fuss)];
+}
+function priors(h,w,withPW){
+  const d=dist(h,w),rail=ZONES[h].rail&&ZONES[w].rail;
+  return [1+.02*d,(withPW&&ZONES[w].id==='kreuz'&&!CORE.has(ZONES[h].id))?.35:0,.25+(rail?.4:0),1.1*Math.exp(-d/5),d<3.5?1.4*(1-d/3.5):0];
+}
+function seedTensor(D,withPW){
+  const nh=D.H.length,nw=D.W.length,x=new Float64Array(nh*nw*NM);
+  for(let h=0;h<nh;h++)for(let w=0;w<nw;w++){const g=Math.exp(-dist(D.H[h],D.W[w])/14),p=priors(D.H[h],D.W[w],withPW);for(let m=0;m<NM;m++)x[cell(nw,h,w,m)]=g*p[m]}
+  return x;
+}
+function ipf3(seed,row,col,mode,nh,nw,iters,snap){
+  const x=Float64Array.from(seed),sum=a=>a.reduce((s,v)=>s+v,0);
+  const T=sum(row),cs=sum(col),ms=sum(mode);
+  const c2=col.map(v=>cs>0?v*T/cs:0),m2=mode.map(v=>ms>0?v*T/ms:0);
+  const s0=sum(x);if(s0>0)for(let i=0;i<x.length;i++)x[i]*=T/s0;
+  if(snap)snap(x,0);
+  for(let it=1;it<=iters;it++){
+    for(let h=0;h<nh;h++){let s=0;for(let w=0;w<nw;w++)for(let m=0;m<NM;m++)s+=x[cell(nw,h,w,m)];const f=s>0?row[h]/s:0;for(let w=0;w<nw;w++)for(let m=0;m<NM;m++)x[cell(nw,h,w,m)]*=f}
+    for(let w=0;w<nw;w++){let s=0;for(let h=0;h<nh;h++)for(let m=0;m<NM;m++)s+=x[cell(nw,h,w,m)];const f=s>0?c2[w]/s:0;for(let h=0;h<nh;h++)for(let m=0;m<NM;m++)x[cell(nw,h,w,m)]*=f}
+    for(let m=0;m<NM;m++){let s=0;for(let i=m;i<x.length;i+=NM)s+=x[i];const f=s>0?m2[m]/s:0;for(let i=m;i<x.length;i+=NM)x[i]*=f}
+    if(snap)snap(x,it);
+  }
+  return x;
+}
+function tae(a,b){let s=0;for(let i=0;i<a.length;i++)s+=Math.abs(a[i]-b[i]);return s}
+function errorOf(M,E){let s=0;for(const D of DIRS)s+=tae(E[D.key],M.truth[D.key]);return s/(2*M.N)}
+function laplace(u,b){return -b*Math.sign(u)*Math.log(1-2*Math.abs(u))}
+
+// Ebene 1 + 2: bekannte Zellen aus den Arbeitgeber-Schnittmengen, Rest per IPF
+function estimateE12(M,eps,draw){
+  const D=DIRS[0],nh=D.H.length,nw=D.W.length,K=new Float64Array(nh*nw*NM);
+  const ur=mulberry32((M.seed*7919+draw*104729+13)>>>0);
+  const b=4/eps,MIN=10,IMPUTE=3;
+  const pub={A:[],B:[]};let pwA=0,totA=0;
+  for(const e of ['A','B']){
+    const wi=D.W.indexOf(ZI[EMP[e].zone]);
+    for(let h=0;h<nh;h++){
+      const t=M.emp[e][h],n={};
+      for(const k of ['total','auto','pw','jt'])n[k]=Math.max(0,Math.round(t[k]+laplace(ur()-.5,b)));
+      pub[e][h]=n;
+      if(n.total<MIN)continue;
+      let a=n.auto<MIN?Math.min(IMPUTE,n.auto):n.auto,p=n.pw<MIN?Math.min(IMPUTE,n.pw):n.pw,j=n.jt<MIN?Math.min(IMPUTE,n.jt):n.jt;
+      const tot=n.total,s=a+p+j;if(s>tot){const f=tot/s;a*=f;p*=f;j*=f}
+      const rest=tot-a-p-j,pr=priors(D.H[h],D.W[wi],false),ps=pr[2]+pr[3]+pr[4];
+      K[cell(nw,h,wi,0)]+=a;K[cell(nw,h,wi,1)]+=p;
+      K[cell(nw,h,wi,2)]+=j+rest*pr[2]/ps;K[cell(nw,h,wi,3)]+=rest*pr[3]/ps;K[cell(nw,h,wi,4)]+=rest*pr[4]/ps;
+      if(e==='A'){pwA+=p;totA+=tot}
+    }
+  }
+  const row=M.rowM.DECH.slice(),col=M.colM.DECH.slice(),km=[0,0,0,0,0];
+  for(let h=0;h<nh;h++)for(let w=0;w<nw;w++)for(let m=0;m<NM;m++){const v=K[cell(nw,h,w,m)];row[h]-=v;col[w]-=v;km[m]+=v}
+  for(let i=0;i<nh;i++)row[i]=Math.max(0,row[i]);for(let i=0;i<nw;i++)col[i]=Math.max(0,col[i]);
+  // Park-&-Walk-Rate von Arbeitgeber A auf übrige Kreuzlinger Arbeitsplätze übertragen
+  const rate=totA>0?pwA/totA:0,wk=D.W.indexOf(ZI.kreuz),e1=M.e1.DECH;
+  let nonCore=0,all=0;for(let h=0;h<nh;h++){let s=0;for(let m=0;m<NM;m++)s+=e1[cell(nw,h,wk,m)];all+=s;if(!CORE.has(ZONES[D.H[h]].id))nonCore+=s}
+  const pwRest=rate*col[wk]*(all>0?nonCore/all:0);
+  const m1=M.e1Modes.DECH;
+  const mode=[Math.max(0,m1[0]-km[0]),pwRest,Math.max(0,m1[2]-km[2]),Math.max(0,m1[3]-km[3]),Math.max(0,m1[4]-km[4]-km[1]-pwRest)];
+  const R=ipf3(seedTensor(D,true),row,col,mode,nh,nw,30,null);
+  const E=new Float64Array(K.length);for(let i=0;i<E.length;i++)E[i]=K[i]+R[i];
+  return {E:{DECH:E,CHDE:M.e1.CHDE},pub,rate};
+}
+
+// ---------- SHA-256 für kurze ASCII-Texte (ein Block) ----------
+const K256=new Uint32Array([0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2]);
+const SW=new Int32Array(64);
+function sha256Bytes(b,len,out){
+  for(let i=0;i<16;i++)SW[i]=0;
+  for(let i=0;i<len;i++)SW[i>>2]|=b[i]<<(24-((i&3)<<3));
+  SW[len>>2]|=0x80<<(24-((len&3)<<3));SW[15]=len<<3;
+  for(let t=16;t<64;t++){const x=SW[t-15],y=SW[t-2];SW[t]=(SW[t-16]+(((x>>>7)|(x<<25))^((x>>>18)|(x<<14))^(x>>>3))+SW[t-7]+(((y>>>17)|(y<<15))^((y>>>19)|(y<<13))^(y>>>10)))|0}
+  let a=0x6a09e667|0,c1=0xbb67ae85|0,c=0x3c6ef372|0,d=0xa54ff53a|0,e=0x510e527f|0,f=0x9b05688c|0,g=0x1f83d9ab|0,h=0x5be0cd19|0;
+  for(let t=0;t<64;t++){
+    const t1=(h+(((e>>>6)|(e<<26))^((e>>>11)|(e<<21))^((e>>>25)|(e<<7)))+((e&f)^(~e&g))+K256[t]+SW[t])|0;
+    const t2=((((a>>>2)|(a<<30))^((a>>>13)|(a<<19))^((a>>>22)|(a<<10)))+((a&c1)^(a&c)^(c1&c)))|0;
+    h=g;g=f;f=e;e=(d+t1)|0;d=c;c=c1;c1=a;a=(t1+t2)|0;
+  }
+  out[0]=(a+0x6a09e667)>>>0;out[1]=(c1+0xbb67ae85)>>>0;out[2]=(c+0x3c6ef372)>>>0;out[3]=(d+0xa54ff53a)>>>0;
+  out[4]=(e+0x510e527f)>>>0;out[5]=(f+0x9b05688c)>>>0;out[6]=(g+0x1f83d9ab)>>>0;out[7]=(h+0x5be0cd19)>>>0;
+  return out;
+}
+const HB=new Uint8Array(64),HO=new Uint32Array(8);
+function sha256Str(s){for(let i=0;i<s.length;i++)HB[i]=s.charCodeAt(i);return sha256Bytes(HB,s.length,HO)}
+function sha256Hex(s){return Array.from(sha256Str(s),v=>v.toString(16).padStart(8,'0')).join('')}
+
+// ---------- Kommutative Verblindung (Demo-Gruppe) ----------
+const P89=(1n<<89n)-1n;
+function modpow(b,e){let r=1n;b%=P89;while(e>0n){if(e&1n)r=r*b%P89;b=b*b%P89;e>>=1n}return r}
+function hashToGroup(s){const w=sha256Str(s);const x=((BigInt(w[0])<<64n)|(BigInt(w[1])<<32n)|BigInt(w[2]))%P89||1n;return x*x%P89}
+if(typeof module!=='undefined')module.exports={buildModel,estimateE12,errorOf,sha256Hex,DIRS,MODES,M:null};
+</script>
+
+<script>
+// ---------- Hilfen ----------
+const $=s=>document.querySelector(s);
+const NS='http://www.w3.org/2000/svg';
+function S(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+const nf=new Intl.NumberFormat('de-DE');
+const fmt=n=>nf.format(Math.round(n));
+const pct=(x,d=1)=>(x*100).toFixed(d).replace('.',',')+' %';
+const MODE_VAR=['--m-auto','--m-pw','--m-oev','--m-rad','--m-fuss'];
+const SC_LABEL={truth:'Wahrheit',e1:'Ebene 1',e12:'Ebene 1 + 2'};
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+const tip=$('#tip');
+function showTip(ev,html){tip.innerHTML=html;tip.hidden=false;const pad=14,w=tip.offsetWidth,h=tip.offsetHeight;let x=ev.clientX+pad,y=ev.clientY+pad;if(x+w>innerWidth-8)x=ev.clientX-w-pad;if(y+h>innerHeight-8)y=ev.clientY-h-pad;tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.max(8,y)+'px'}
+function hideTip(){tip.hidden=true}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+
+const st={tab:'ueberblick',sc:'e12',dir:0,diff:false,modes:[1,1,1,1,1],thr:20,eps:1,ssDir:0,ssStep:0,ipfIt:20,psiEmp:'A',psiPartner:'park'};
+let M=null,E12=null;
+function epsFromSlider(v){return .05*Math.pow(100,v/100)}
+function sliderFromEps(e){return Math.round(Math.log(e/.05)/Math.log(100)*100)}
+function epsStr(e){return e<.1?e.toFixed(2).replace('.',','):e<1?e.toFixed(2).replace('.',','):e.toFixed(1).replace('.',',')}
+
+function tensorOf(sc,key){return sc==='truth'?M.truth[key]:sc==='e1'?M.e1[key]:E12.E[key]}
+function modeTotals(T){const t=[0,0,0,0,0];for(let i=0;i<T.length;i++)t[i%NM]+=T[i];return t}
+function flows(T,D,mask){const nh=D.H.length,nw=D.W.length,F=new Float64Array(nh*nw);for(let h=0;h<nh;h++)for(let w=0;w<nw;w++){let s=0;for(let m=0;m<NM;m++)if(mask[m])s+=T[cell(nw,h,w,m)];F[h*nw+w]=s}return F}
+
+// ---------- Karte ----------
+const CX=650,CY=310,SC=56,C0={lat:47.655,lon:9.172};
+function proj(lat,lon){const x=(lon-C0.lon)*75.1,y=(lat-C0.lat)*111.2,r=Math.hypot(x,y);if(r<1e-9)return[CX,CY];const rp=Math.pow(r,.75)*SC;return[CX+x/r*rp,CY-y/r*rp]}
+function densify(pts,n=8){const o=[];for(let i=0;i<pts.length-1;i++){const[a,b]=pts[i],[c,d]=pts[i+1];for(let k=0;k<n;k++)o.push([a+(c-a)*k/n,b+(d-b)*k/n])}o.push(pts[pts.length-1]);return o}
+function pathOf(pts,close){return densify(pts).map((p,i)=>{const[x,y]=proj(p[0],p[1]);return(i?'L':'M')+x.toFixed(1)+','+y.toFixed(1)}).join('')+(close?'Z':'')}
+const OBERSEE=[[47.664,9.180],[47.672,9.190],[47.685,9.205],[47.700,9.195],[47.720,9.170],[47.745,9.140],[47.80,9.09],[47.80,9.17],[47.770,9.175],[47.735,9.215],[47.700,9.260],[47.690,9.290],[47.680,9.36],[47.585,9.36],[47.610,9.290],[47.633,9.235],[47.645,9.205],[47.655,9.188],[47.660,9.181]];
+const UNTERSEE=[[47.6665,9.177],[47.667,9.140],[47.676,9.110],[47.700,9.090],[47.712,9.050],[47.733,8.990],[47.750,8.965],[47.735,8.950],[47.712,8.980],[47.700,8.960],[47.690,8.900],[47.668,8.860],[47.660,8.870],[47.663,8.960],[47.668,9.040],[47.664,9.100],[47.6625,9.140],[47.6625,9.176]];
+const BORDER=[[47.71,8.76],[47.69,8.83],[47.672,8.868],[47.675,8.95],[47.683,9.03],[47.680,9.08],[47.668,9.12],[47.664,9.14],[47.657,9.158],[47.655,9.17],[47.657,9.182],[47.661,9.188]];
+const BORDER_LAKE=[[47.661,9.188],[47.645,9.25],[47.615,9.33],[47.60,9.37]];
+const ZP=ZONES.map(z=>proj(z.lat,z.lon));
+const LABEL_POS={kn_alt:[14,4,'start'],kn_par:[-14,-6,'end'],kn_pet:[14,-4,'start'],kn_wol:[-14,4,'end'],kn_egg:[14,4,'start'],allens:[0,-16,'middle'],radolf:[0,-16,'middle'],singen:[0,22,'middle'],kreuz:[0,28,'middle'],taeger:[-14,4,'end'],bottig:[-4,26,'middle'],muenst:[16,4,'start'],weinf:[0,26,'middle'],frauen:[0,26,'middle'],amris:[0,26,'middle']};
+
+let mapLayers=null;
+function initMap(){
+  const svg=$('#map');svg.innerHTML='';
+  const defs=S('defs',{},svg);
+  for(const[id,v]of[['arr','--flow'],['arrOver','--over'],['arrUnder','--under']]){const mk=S('marker',{id,viewBox:'0 0 10 10',refX:'8',refY:'5',markerWidth:'7',markerHeight:'7',markerUnits:'userSpaceOnUse',orient:'auto'},defs);S('path',{d:'M0,0 L10,5 L0,10 z',style:`fill:var(${v})`},mk)}
+  S('rect',{x:0,y:0,width:1000,height:690,style:'fill:var(--land)'},svg);
+  // Schweizer Seite leicht getönt: Fläche südlich der Grenze
+  const chPts=[[47.71,8.76],...BORDER.slice(1),...BORDER_LAKE.slice(1),[47.40,9.37],[47.40,8.76]];
+  S('path',{d:pathOf(chPts,true),style:'fill:var(--land-ch)'},svg);
+  S('path',{d:pathOf(OBERSEE,true),style:'fill:var(--water);stroke:var(--water-edge);stroke-width:1'},svg);
+  S('path',{d:pathOf(UNTERSEE,true),style:'fill:var(--water);stroke:var(--water-edge);stroke-width:1'},svg);
+  S('path',{d:pathOf(BORDER,false),style:'fill:none;stroke:var(--border-line);stroke-width:1.6;stroke-dasharray:7 4;opacity:.8'},svg);
+  S('path',{d:pathOf(BORDER_LAKE,false),style:'fill:none;stroke:var(--border-line);stroke-width:1.2;stroke-dasharray:2 5;opacity:.6'},svg);
+  const t1=S('text',{x:40,y:215,class:'clabel'},svg);t1.textContent='DEUTSCHLAND';
+  const t2=S('text',{x:40,y:470,class:'clabel'},svg);t2.textContent='SCHWEIZ';
+  const t3=S('text',{x:850,y:190,class:'clabel'},svg);t3.textContent='BODENSEE';
+  const flowsG=S('g',{},svg),zonesG=S('g',{},svg),labelsG=S('g',{},svg);
+  ZONES.forEach((z,i)=>{const[x,y]=ZP[i],lp=LABEL_POS[z.id];const t=S('text',{x:x+lp[0],y:y+lp[1],'text-anchor':lp[2],class:'zlabel'},labelsG);t.textContent=z.short});
+  mapLayers={flowsG,zonesG};
+}
+function drawMap(){
+  const D=DIRS[st.dir],nh=D.H.length,nw=D.W.length,mask=st.modes;
+  const Ft=flows(M.truth[D.key],D,mask),F1=flows(M.e1[D.key],D,mask),F12=flows(E12.E[D.key],D,mask);
+  const Fs={truth:Ft,e1:F1,e12:F12}[st.sc];
+  const diff=st.diff&&st.sc!=='truth';
+  let maxRef=1;for(const v of Ft)maxRef=Math.max(maxRef,v);
+  // Zonen
+  const zs=mapLayers.zonesG;zs.innerHTML='';
+  const tot=new Map();
+  for(let h=0;h<nh;h++)for(let w=0;w<nw;w++){const v=Fs[h*nw+w];tot.set(D.H[h],(tot.get(D.H[h])||0)+v);tot.set(D.W[w],(tot.get(D.W[w])||0)+v)}
+  const rad=new Map();
+  ZONES.forEach((z,i)=>{
+    const n=tot.get(i)||0,r=4+Math.sqrt(n)*.42;rad.set(i,r);
+    const[x,y]=ZP[i];const isOrigin=z.side===D.from;
+    const c=S('circle',{cx:x,cy:y,r,style:`fill:${isOrigin?'var(--surface)':'var(--ink)'};stroke:var(--ink);stroke-width:1.5;cursor:pointer`},zs);
+    c.addEventListener('mousemove',ev=>{
+      const idx=isOrigin?D.H.indexOf(i):D.W.indexOf(i);let t=0,a=0,b=0;
+      for(let k=0;k<(isOrigin?nw:nh);k++){const j=isOrigin?idx*nw+k:k*nw+idx;t+=Ft[j];a+=F1[j];b+=F12[j]}
+      showTip(ev,`<div class="tt">${esc(z.name)}</div><div class="muted" style="margin-bottom:4px">${isOrigin?'Wohnort':'Arbeitsort'}, ausgewählte Verkehrsmittel</div><table><tr><td>Wahrheit</td><td class="r">${fmt(t)}</td></tr><tr><td>Ebene 1</td><td class="r">${fmt(a)}</td></tr><tr><td>Ebene 1 + 2</td><td class="r">${fmt(b)}</td></tr></table>`)});
+    c.addEventListener('mouseleave',hideTip);
+  });
+  // Ströme
+  const fg=mapLayers.flowsG;fg.innerHTML='';
+  const items=[];
+  for(let h=0;h<nh;h++)for(let w=0;w<nw;w++){const j=h*nw+w,val=diff?Fs[j]-Ft[j]:Fs[j];if(Math.abs(val)>=st.thr)items.push({h,w,j,val})}
+  items.sort((a,b)=>Math.abs(a.val)-Math.abs(b.val));
+  for(const it of items){
+    const a=D.H[it.h],b=D.W[it.w],[x1,y1]=ZP[a],[x2,y2]=ZP[b];
+    const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy),k=.22;
+    const cx=(x1+x2)/2-dy*k,cy=(y1+y2)/2+dx*k;
+    const tx=x2-cx,ty=y2-cy,tl=Math.hypot(tx,ty),rr=rad.get(b)+3;
+    const ex=x2-tx/tl*rr,ey=y2-ty/tl*rr;
+    const sx=x1+(cx-x1)/Math.hypot(cx-x1,cy-y1)*(rad.get(a)+1),sy=y1+(cy-y1)/Math.hypot(cx-x1,cy-y1)*(rad.get(a)+1);
+    const d=`M${sx.toFixed(1)},${sy.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${ex.toFixed(1)},${ey.toFixed(1)}`;
+    const wv=Math.max(1.2,Math.abs(it.val)/maxRef*18);
+    const col=diff?(it.val>0?'--over':'--under'):'--flow',mk=diff?(it.val>0?'arrOver':'arrUnder'):'arr';
+    const p=S('path',{d,style:`fill:none;stroke:var(${col});stroke-width:${wv.toFixed(2)};stroke-linecap:round;opacity:.62`,'marker-end':`url(#${mk})`},fg);
+    const hit=S('path',{d,class:'flow-hit',style:`fill:none;stroke:transparent;stroke-width:${(wv+10).toFixed(1)}`},fg);
+    hit.addEventListener('mousemove',ev=>{p.style.opacity='1';
+      showTip(ev,`<div class="tt">${esc(ZONES[a].short)} → ${esc(ZONES[b].short)}</div><table><tr><td>Wahrheit</td><td class="r">${fmt(Ft[it.j])}</td></tr><tr><td>Ebene 1</td><td class="r">${fmt(F1[it.j])}</td><td class="muted">${sgn(F1[it.j]-Ft[it.j])}</td></tr><tr><td>Ebene 1 + 2</td><td class="r">${fmt(F12[it.j])}</td><td class="muted">${sgn(F12[it.j]-Ft[it.j])}</td></tr></table>`)});
+    hit.addEventListener('mouseleave',()=>{p.style.opacity='.62';hideTip()});
+  }
+  const lg=$('#mapLegend');
+  lg.innerHTML=diff
+    ?`<span><span class="ln" style="border-color:var(--over)"></span>überschätzt</span><span><span class="ln" style="border-color:var(--under)"></span>unterschätzt</span><span>Linienbreite = Abweichung in Personen, ab ${st.thr}</span>`
+    :`<span><span class="ln"></span>Pendelnde je Tag, ${SC_LABEL[st.sc]}, ab ${st.thr}</span><span>○ Wohnort ● Arbeitsort, Fläche = Pendelnde</span><span>Bogen und Pfeil zeigen die Richtung</span>`;
+}
+function sgn(v){const r=Math.round(v);return(r>0?'+':r<0?'−':'±')+fmt(Math.abs(r))}
+
+// ---------- Überblick ----------
+function renderKPIs(){
+  const D=DIRS[0];
+  const share=T=>{const t=modeTotals(T),s=t.reduce((a,b)=>a+b,0);return(t[0]+t[1])/s};
+  const e12=errorOf(M,E12.E);
+  $('#kpis').innerHTML=`
+    <div class="kpi"><span class="lbl">Grenzpendelnde in den Testdaten</span><span class="val num">${fmt(M.N)}</span><span class="det">${fmt(DIRS[0].n)} DE → CH · ${fmt(DIRS[1].n)} CH → DE</span></div>
+    <div class="kpi"><span class="lbl">Mit dem Auto, DE → CH</span><span class="val num">${pct(share(M.truth.DECH),0)}</span><span class="det">Ebene 1 sieht <b>${pct(share(M.e1.DECH),0)}</b> · Ebene 1 + 2 <b>${pct(share(E12.E.DECH),0)}</b></span></div>
+    <div class="kpi"><span class="lbl">Falsch zugeordnete Pendelnde</span><span class="val num">${pct(e12,0)}</span><span class="det">Ebene 1 allein: <b>${pct(M.errE1,0)}</b> · Wohnort × Arbeitsort × Verkehrsmittel, ε = ${epsStr(st.eps)}</span></div>
+    <div class="kpi"><span class="lbl">Rohdatensätze, die ein Haus verlassen</span><span class="val num">0</span><span class="det">heraus gehen nur Anteile, verblindete Werte und verrauschte Summen</span></div>`;
+}
+function renderModal(){
+  const D=DIRS[st.dir];
+  $('#msDir').textContent=D.label+', Morgenspitze';
+  $('#msLegend').innerHTML=MODES.map((m,i)=>`<span><i class="sw" style="background:var(${MODE_VAR[i]})"></i>${m.label}</span>`).join('');
+  const rows=['truth','e1','e12'].map(sc=>{const t=modeTotals(tensorOf(sc,D.key)),s=t.reduce((a,b)=>a+b,0);return{sc,t,s}});
+  const box=$('#msBars');box.innerHTML='';
+  for(const r of rows){
+    const row=document.createElement('div');row.className='ms-row';
+    row.innerHTML=`<span class="nm">${SC_LABEL[r.sc]}</span>`;
+    const bar=document.createElement('div');bar.className='ms-bar';
+    r.t.forEach((v,i)=>{if(v<.5)return;const sp=document.createElement('span');sp.style.flex=`${v} 1 0`;sp.style.background=`var(${MODE_VAR[i]})`;
+      sp.addEventListener('mousemove',ev=>showTip(ev,`<div class="tt">${MODES[i].label} · ${SC_LABEL[r.sc]}</div>${fmt(v)} Pendelnde, ${pct(v/r.s)}`));sp.addEventListener('mouseleave',hideTip);bar.appendChild(sp)});
+    row.appendChild(bar);box.appendChild(row);
+  }
+  $('#msTable').innerHTML=`<table><thead><tr><th>Verkehrsmittel</th>${rows.map(r=>`<th class="r">${SC_LABEL[r.sc]}</th>`).join('')}</tr></thead><tbody>${MODES.map((m,i)=>`<tr><td>${m.label}</td>${rows.map(r=>`<td class="r num">${fmt(r.t[i])} <span class="muted">${pct(r.t[i]/r.s,0)}</span></td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+function renderInsights(){
+  const D=DIRS[0],nw=D.W.length;
+  const pw=T=>modeTotals(T)[1];
+  const nh=D.H.length,odSum=(T,h,w)=>{let s=0;for(let m=0;m<NM;m++)s+=T[cell(nw,h,w,m)];return s};
+  let best=null;for(let h=0;h<nh;h++)for(let w=0;w<nw;w++){const t=odSum(M.truth.DECH,h,w),a=odSum(M.e1.DECH,h,w),c=odSum(E12.E.DECH,h,w),g=Math.abs(a-t)-Math.abs(c-t);if(!best||g>best.g)best={h,w,t,a,c,g}}
+  const held=M.emp.B.reduce((a,c)=>a+c.jtHeld,0),used=M.emp.B.reduce((a,c)=>a+c.jt,0);
+  const tr=x=>`<span class="cmp"><span>Wahrheit <b>${fmt(x[0])}</b></span><span>Ebene 1 <b>${fmt(x[1])}</b></span><span>Ebene 1 + 2 <b>${fmt(x[2])}</b></span></span>`;
+  $('#insights').innerHTML=`
+    <li style="border-left-color:var(--m-pw)"><span class="ih">Park & Walk: Auto bis Konstanz, zu Fuß über die Grenze</span><span class="ib">Zählstellen sehen nur Fußgänger. Erst die Schnittmenge Arbeitgeber × Parkhaus zeigt, wer vorher Auto gefahren ist.</span>${tr([pw(M.truth.DECH),pw(M.e1.DECH),pw(E12.E.DECH)])}</li>
+    <li><span class="ih">Größte Korrektur: ${esc(ZONES[D.H[best.h]].short)} → ${esc(ZONES[D.W[best.w]].short)}</span><span class="ib">Randsummen sagen nicht, wer wohin pendelt. Die Wohnorte der Beschäftigten beider Arbeitgeber (verrauscht) verschieben diesen Strom am stärksten.</span>${tr([best.t,best.a,best.c])}</li>
+    <li><span class="ih">Jobtickets bei Arbeitgeber B</span><span class="ib">${fmt(held)} Jobtickets ausgegeben, regelmäßig über die Grenze genutzt: ${fmt(used)} (${pct(used/Math.max(1,held),0)}). Das zeigt die Schnittmenge mit den Fahrtdaten des Verkehrsbetriebs.</span></li>`;
+}
+function renderOverview(){renderKPIs();drawMap();renderModal();renderInsights()}
+
+// ---------- Datenhalter ----------
+function renderHolders(){
+  const c=M.counters.DECH,c2=M.counters.CHDE;
+  const tbl=(head,rows)=>`<div class="tbl-scroll"><table><thead><tr>${head.map((h,i)=>`<th${i?' class="r"':''}>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((v,i)=>`<td${i?' class="r"':''}>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const tblL=(head,rows)=>`<div class="tbl-scroll"><table><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const card=(name,flag,ex,body,leaves,method)=>`<article class="holder"><div class="hh"><h3>${name}</h3><span class="flag">${flag}</span></div>${ex?`<p class="note">${ex}</p>`:''}${body}<div class="leaves"><span class="k">Verlässt das Haus</span><span>${leaves}</span></div><div><span class="method">${method}</span></div></article>`;
+  const hrRows=e=>M.hr[e].slice(0,4).map(p=>[p.pnr,esc(ZONES[p.h].short),p.regPlate||'–',p.jt||'–']);
+  const H=[];
+  H.push(card('Kfz-Zählstellen','DE / CH','z. B. Zollstellen, Kanton Thurgau, Stadt Konstanz',tbl(['Übergang, 6–9 Uhr','→ CH','→ DE'],Object.keys(c.veh).map(k=>[CROSS[k],fmt(c.veh[k]),fmt(c2.veh[k])])),'eine Zahl je Richtung, als drei zufällige Anteile','Sichere Summe'));
+  H.push(card('Bahn','DE / CH','z. B. Seehas, Thurbo',tbl(['Fahrgäste über die Grenze','6–9 Uhr'],[['Richtung CH',fmt(c.bahn)],['Richtung DE',fmt(c2.bahn)]]),'eine Zahl je Richtung, als drei zufällige Anteile; die eigene Fahrgastzahl bleibt geheim','Sichere Summe'));
+  H.push(card('Bus','DE','z. B. Stadtwerke Konstanz',tbl(['Fahrgäste über die Grenze','6–9 Uhr'],[['Richtung CH',fmt(c.bus)],['Richtung DE',fmt(c2.bus)]]),'eine Zahl je Richtung, als drei zufällige Anteile','Sichere Summe'));
+  H.push(card('Rad- und Fußzählung','DE / CH','neue Zähler an den Übergängen (heute gibt es keine)',tbl(['Übergang, 6–9 Uhr','Rad → CH','Fuß → CH'],[...new Set([...Object.keys(c.rad),...Object.keys(c.fuss)])].map(k=>[CROSS[k],c.rad[k]!=null?fmt(c.rad[k]):'–',c.fuss[k]!=null?fmt(c.fuss[k]):'–'])),'eine Zahl je Verkehrsmittel und Richtung','Sichere Summe'));
+  H.push(card('Parkhäuser Konstanz','DE',`${fmt(M.parkhaus.length)} Einfahrten mit Kennzeichenerkennung, davon ${fmt(M.parkCommute.length)} mit Pendelmuster (Einfahrt 6–9:30 Uhr, über 6 Stunden)`,tblL(['Kennzeichen','Einfahrt','Dauer'],M.parkhaus.slice(0,4).map(e=>[e.plate,e.einS,e.dauerS])),'verblindete Kennzeichen (für andere nicht lesbar), keine Klartexte','Schnittmenge (PSI)'));
+  H.push(card('Verkehrsbetrieb: Abos','DE / CH',`${fmt(M.taps.length)} Abo- und Jobticketnummern mit Fahrten über die Grenze je Woche`,tblL(['Ticketnummer','Grenzfahrten / Woche'],M.taps.slice(0,4).map(t=>[t.jt,String(t.n)])),'verblindete Ticketnummern der regelmäßig Nutzenden','Schnittmenge (PSI)'));
+  for(const e of ['A','B'])H.push(card(`${EMP[e].name}`,'CH',`${EMP[e].desc} · ${fmt(M.hr[e].length)} Beschäftigte mit Wohnort in Deutschland`,tblL(['Pers.-Nr.','Wohnort','Kennzeichen','Jobticket'],hrRows(e)),'verblindete Kennzeichen und Ticketnummern je Wohnort-Gruppe; Gruppengrößen nur verrauscht','Schnittmenge (PSI) + Rauschen'));
+  H.push(card('Amtliche Statistik','DE / CH','z. B. BFS-Grenzgängerstatistik, Beschäftigtenstatistik',tbl(['Grenzgänger nach Wohnort','Anzahl'],DIRS[0].H.map((h,i)=>[esc(ZONES[h].short),fmt(M.rowM.DECH[i])])),'bereits veröffentlichte Randsummen (auf 5 gerundet)','Offen'));
+  $('#holders').innerHTML=H.join('');
+}
+
+// ---------- Ebene 1: sichere Summe ----------
+const NODES=['Rechenstelle 1','Rechenstelle 2','Rechenstelle 3'];
+const NODE_EX=['z. B. Statistik BW','z. B. Statistik Thurgau','z. B. Hochschule'];
+let ss={shares:null};
+function rnd32(){try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]}catch(e){return Math.floor(Math.random()*4294967296)>>>0}}
+const hex8=v=>(v>>>0).toString(16).padStart(8,'0');
+function renderSS(){
+  const D=DIRS[st.ssDir],H=M.counters[D.key].holders,step=st.ssStep;
+  if(step>=1&&!ss.shares){ss.shares=H.map(h=>{const a=rnd32(),b=rnd32();return[a,b,(h.v-a-b)>>>0]})}
+  const info=['Jeder Halter kennt nur seine eigene Zahl. Klicken Sie auf „Werte aufteilen“.',
+    'Jeder Halter zerlegt seine Zahl in drei Zufallszahlen, die modulo 2³² zusammen die Zahl ergeben, und schickt je eine an eine Rechenstelle. Eine einzelne Zufallszahl verrät nichts.',
+    'Jede Rechenstelle addiert, was sie bekommen hat, getrennt nach Verkehrsmittel. Auch diese Teilsummen sehen zufällig aus.',
+    'Die drei Teilsummen werden zusammengelegt. Heraus kommt nur die Summe je Verkehrsmittel. Bahn und Bus erscheinen nur gemeinsam als Bus/Bahn.'][step];
+  $('#ssInfo').textContent=info;
+  $('#ssNext').textContent=['Werte aufteilen','Teilsummen bilden','Ergebnis öffnen','Fertig'][step];
+  $('#ssNext').disabled=step>=3;
+  let html=`<thead><tr><th>Halter</th><th class="r">Eigene Zahl</th>${NODES.map((n,i)=>`<th class="r" title="${NODE_EX[i]}">${n}<br><span class="muted" style="font-weight:500">${NODE_EX[i]}</span></th>`).join('')}</tr></thead><tbody>`;
+  H.forEach((h,i)=>{html+=`<tr><td>${h.name}<br><span class="muted note">${h.unit}</span></td><td class="own r num">${fmt(h.v)}<span class="lock">bleibt im Haus</span></td>${[0,1,2].map(k=>`<td class="share r">${step>=1?hex8(ss.shares[i][k]):'·'}</td>`).join('')}</tr>`});
+  if(step>=2){
+    const groups=[['Auto',[0]],['Bus/Bahn',[1,2]],['Rad',[3]],['Zu Fuß',[4]]];
+    html+=`<tr class="sum"><td colspan="5">Teilsummen je Verkehrsmittel</td></tr>`;
+    for(const[g,idx]of groups){const ps=[0,1,2].map(k=>idx.reduce((a,i)=>(a+ss.shares[i][k])>>>0,0));
+      html+=`<tr><td>${g}</td><td class="r">${step>=3?`<b class="num">${fmt(ps.reduce((a,b)=>(a+b)>>>0,0))}</b>`:'<span class="muted">?</span>'}</td>${ps.map(v=>`<td class="share r">${hex8(v)}</td>`).join('')}</tr>`}
+  }
+  $('#ssTable').innerHTML=html+'</tbody>';
+  const res=$('#ssResult');
+  if(step<3){res.innerHTML='';return}
+  const m=M.e1Modes[D.key],T=modeTotals(M.truth[D.key]),sum=m.reduce((a,b)=>a+b,0),ts=T.reduce((a,b)=>a+b,0);
+  const raw=[H[0].v,0,H[1].v+H[2].v,H[3].v,H[4].v];
+  const asm=['Hintergrund 25 %, 1,1 Pers./Fz.','','Hintergrund 15 %','Hintergrund 10 %','Hintergrund 30 %'];
+  res.innerHTML=`<h3 style="margin-bottom:6px">Von der Zählung zu Pendelnden</h3><p class="note" style="margin-bottom:8px">Gezählt werden auch Einkaufsfahrten und Ausflüge. Die Schätzung zieht einen angenommenen Hintergrund ab. Park & Walk bleibt unsichtbar: Diese Menschen zählen hier als Fußgänger.</p>
+  <div class="tbl-scroll"><table><thead><tr><th>Verkehrsmittel</th><th class="r">gezählt</th><th>Annahme</th><th class="r">Pendelnde geschätzt</th><th class="r">Wahrheit</th></tr></thead><tbody>
+  ${[0,2,3,4,1].map(i=>`<tr><td><i class="sw" style="background:var(${MODE_VAR[i]});margin-right:6px"></i>${MODES[i].label}</td><td class="r num">${i===1?'–':fmt(raw[i])}</td><td class="note">${i===1?'nicht messbar':asm[i]}</td><td class="r num">${fmt(m[i])} <span class="muted">${pct(m[i]/sum,0)}</span></td><td class="r num">${fmt(T[i])} <span class="muted">${pct(T[i]/ts,0)}</span></td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+// ---------- Ebene 1: IPF-Heatmaps ----------
+function mixColor(t){const a=cssVar('--heat-lo'),b=cssVar('--heat-hi');const p=s=>[1,3,5].map(i=>parseInt(s.slice(i,i+2),16));const A=p(a),B=p(b);return`rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')})`}
+function heat(el,G,max,ref){
+  const D=DIRS[0],nh=D.H.length,nw=D.W.length;
+  let h=`<thead><tr><th class="rh"></th>${D.W.map(w=>`<th title="${esc(ZONES[w].name)}">${esc(ZONES[w].short.slice(0,6))}.</th>`).join('')}</tr></thead><tbody>`;
+  for(let i=0;i<nh;i++){h+=`<tr><th class="rh" title="${esc(ZONES[D.H[i]].name)}">${esc(ZONES[D.H[i]].short)}</th>`;
+    for(let j=0;j<nw;j++){const v=G[i*nw+j],t=Math.sqrt(Math.min(1,v/max));h+=`<td style="background:${mixColor(t)};color:${t>.55?'var(--surface)':'var(--ink-2)'}" data-i="${i}" data-j="${j}">${v>=.5?Math.round(v):''}</td>`}
+    h+='</tr>'}
+  el.innerHTML=h+'</tbody>';
+  el.onmousemove=ev=>{const td=ev.target.closest('td');if(!td){hideTip();return}const i=+td.dataset.i,j=+td.dataset.j;
+    showTip(ev,`<div class="tt">${esc(ZONES[D.H[i]].short)} → ${esc(ZONES[D.W[j]].short)}</div><table><tr><td>Wahrheit</td><td class="r">${fmt(ref[i*nw+j])}</td></tr><tr><td>Schätzung</td><td class="r">${fmt(M.snaps[st.ipfIt][i*nw+j])}</td></tr></table>`)};
+  el.onmouseleave=hideTip;
+}
+function renderIPF(){
+  const D=DIRS[0],nh=D.H.length,nw=D.W.length,T=M.truth.DECH;
+  const G=new Float64Array(nh*nw);for(let h=0;h<nh;h++)for(let w=0;w<nw;w++){let s=0;for(let m=0;m<NM;m++)s+=T[cell(nw,h,w,m)];G[h*nw+w]=s}
+  let max=0;for(const v of G)max=Math.max(max,v);
+  heat($('#heatTrue'),G,max,G);heat($('#heatEst'),M.snaps[st.ipfIt],max,G);
+  $('#ipfItVal').textContent=st.ipfIt;
+  $('#ipfErr').innerHTML=`falsch zugeordnet: <b class="num">${pct(M.snapErr[st.ipfIt])}</b>`;
+  // Sparkline
+  const svg=$('#ipfSpark');svg.innerHTML='';
+  const E=M.snapErr,n=E.length,W=520,Hh=90,pl=36,pr=12,pt=8,pb=20,ymax=Math.ceil(Math.max(...E)*10)/10;
+  const x=i=>pl+i/(n-1)*(W-pl-pr),y=v=>pt+(1-v/ymax)*(Hh-pt-pb);
+  for(const g of [0,ymax/2,ymax]){S('line',{x1:pl,x2:W-pr,y1:y(g),y2:y(g),style:'stroke:var(--line);stroke-width:1'},svg);const t=S('text',{x:pl-6,y:y(g)+4,'text-anchor':'end',style:'fill:var(--muted);font-size:10.5px;font-family:var(--sans)'},svg);t.textContent=pct(g,0)}
+  for(const i of [0,5,10,15,20]){const t=S('text',{x:x(i),y:Hh-4,'text-anchor':'middle',style:'fill:var(--muted);font-size:10.5px;font-family:var(--sans)'},svg);t.textContent=i}
+  S('path',{d:E.map((v,i)=>(i?'L':'M')+x(i).toFixed(1)+','+y(v).toFixed(1)).join(''),style:'fill:none;stroke:var(--m-auto);stroke-width:2;stroke-linejoin:round'},svg);
+  S('circle',{cx:x(st.ipfIt),cy:y(E[st.ipfIt]),r:4.5,style:'fill:var(--m-auto);stroke:var(--surface);stroke-width:2'},svg);
+  $('#ipfNote').textContent=`Nach 20 Iterationen stimmen alle Randsummen. Die Restabweichung von ${pct(M.snapErr[20],0)} liegt daran, dass Randsummen nicht verraten, wer genau wohin pendelt. Diese Lücke schließt Ebene 2 teilweise.`;
+}
+
+// ---------- Ebene 2: PSI ----------
+let psi=null,psiBusy=false;
+const PSI_STEPS=[
+  'Arbeitgeber verblindet seine Einträge mit geheimem Schlüssel a, getrennt nach Wohnort-Gruppe.',
+  'Gegenstelle verblindet ihre Einträge mit geheimem Schlüssel b.',
+  'Gegenstelle verblindet die Arbeitgeber-Werte ein zweites Mal (mit b), mischt sie je Gruppe und schickt sie zurück.',
+  'Arbeitgeber verblindet die Gegenstellen-Werte mit a und zählt gleiche Werte je Gruppe. Heraus kommt nur die Anzahl.'];
+function randBig(){let s=0n;for(let i=0;i<3;i++)s=(s<<32n)|BigInt(rnd32());return 2n+s%(P89-3n)}
+const bh=x=>x.toString(16).padStart(23,'0');
+function psiInit(){
+  const D=DIRS[0],e=st.psiEmp,park=st.psiPartner==='park';
+  const emp=M.hr[e].filter(p=>park?p.regPlate:p.jt).map(p=>({x:park?p.regPlate:p.jt,g:D.H.indexOf(p.h)}));
+  const par=(park?M.parkCommute:M.tapCommute).map(x=>({x}));
+  psi={step:0,a:randBig(),b:randBig(),emp,par,park,counts:null};
+  renderPSI();
+}
+async function chunked(arr,fn,prog,from,to){const n=arr.length,B=120;for(let i=0;i<n;i+=B){for(let k=i;k<Math.min(n,i+B);k++)fn(arr[k]);$(prog).style.width=(from+(to-from)*Math.min(1,(i+B)/n))*100+'%';await new Promise(r=>setTimeout(r,0))}}
+async function psiStep(){
+  if(psiBusy||!psi||psi.step>=4)return;psiBusy=true;setPsiButtons();
+  const s=psi.step;
+  if(s===0)await chunked(psi.emp,o=>{o.ga=modpow(hashToGroup(o.x),psi.a)},'#psiProg',0,1);
+  if(s===1)await chunked(psi.par,o=>{o.gb=modpow(hashToGroup(o.x),psi.b)},'#psiProg',0,1);
+  if(s===2){await chunked(psi.emp,o=>{o.gab=modpow(o.ga,psi.b)},'#psiProg',0,1);
+    psi.groups=DIRS[0].H.map((_,g)=>{const a=psi.emp.filter(o=>o.g===g).map(o=>o.gab);for(let i=a.length-1;i>0;i--){const j=rnd32()%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a})}
+  if(s===3){await chunked(psi.par,o=>{o.gba=modpow(o.gb,psi.a)},'#psiProg',0,1);
+    const set=new Set(psi.par.map(o=>o.gba));psi.counts=psi.groups.map(a=>a.filter(v=>set.has(v)).length)}
+  psi.step++;psiBusy=false;renderPSI();
+}
+function setPsiButtons(){const done=psi&&psi.step>=4;$('#psiNext').disabled=psiBusy||done;$('#psiAll').disabled=psiBusy||done;$('#psiReset').disabled=psiBusy;$('#psiNext').textContent=done?'Fertig':`Schritt ${psi?psi.step+1:1} ausführen`}
+function renderPSI(){
+  const s=psi.step,e=st.psiEmp,park=psi.park;
+  $('#psiSteps').innerHTML=PSI_STEPS.map((t,i)=>`<li class="${i<s?'done':i===s?'next':''}">${t}</li>`).join('');
+  $('#pEmpName').textContent=`${EMP[e].name} · ${EMP[e].desc}`;
+  $('#pParName').textContent=park?'Parkhäuser Konstanz':'Verkehrsbetrieb';
+  $('#pParFlag').textContent=park?'DE':'DE / CH';
+  if(s===0)$('#psiProg').style.width='0';
+  const row=(a,b)=>`<div><span>${esc(a)}</span><span class="arr">→</span><span>${esc(b)}</span></div>`;
+  const E=psi.emp.slice(0,4),P=psi.par.slice(0,4);
+  let er=E.map(o=>row(o.x,s>=1?bh(o.ga):'…')).join('');
+  if(s>=3)er+=`<div style="margin-top:6px;color:var(--muted)"><span>zurück, gemischt</span><span></span><span></span></div>`+psi.groups.flat().slice(0,3).map(v=>row('(a·b)',bh(v))).join('');
+  $('#pEmpRows').innerHTML=er;
+  let pr=P.map(o=>row(o.x,s>=2?bh(o.gb):'…')).join('');
+  if(s>=3)pr+=`<div style="margin-top:6px;color:var(--muted)"><span>vom Arbeitgeber</span><span></span><span></span></div>`+E.slice(0,3).map(o=>row(bh(o.ga).slice(0,12)+'…',bh(o.gab))).join('');
+  $('#pParRows').innerHTML=pr;
+  const kind=park?'Kennzeichen':'Ticketnummern';
+  $('#pEmpSees').innerHTML=`Kennt: ${fmt(psi.emp.length)} eigene ${kind} in ${DIRS[0].H.length} Wohnort-Gruppen.<br>Bekommt: ${s>=2?fmt(psi.par.length)+' verblindete Werte, nicht umkehrbar':'noch nichts'}${s>=4?', dazu die Trefferzahl je Gruppe.':'.'}`;
+  $('#pParSees').innerHTML=`Kennt: ${fmt(psi.par.length)} eigene ${kind} (${park?'nur Einfahrten mit Pendelmuster':'nur ≥ 3 Grenzfahrten pro Woche'}).<br>Bekommt: ${s>=1?'Gruppengrößen und '+fmt(psi.emp.length)+' verblindete Werte. Wer dahintersteckt, sieht sie nicht.':'noch nichts.'}`;
+  setPsiButtons();
+  renderPSIResult();
+}
+function renderPSIResult(){
+  const box=$('#psiResult');
+  if(!psi||psi.step<4){box.innerHTML='';return}
+  const D=DIRS[0],e=st.psiEmp,key=psi.park?'pw':'jt',pub=E12.pub[e];
+  const direct=M.emp[e].map(c=>c[key]),ok=psi.counts.every((v,i)=>v===direct[i]);
+  const total=psi.counts.reduce((a,b)=>a+b,0);
+  box.innerHTML=`<div class="panel-head" style="margin-bottom:6px"><h3>${psi.park?'Park & Walk':'Jobticket regelmäßig genutzt'}: ${fmt(total)} Treffer</h3><span class="pill ${ok?'ok':''}">${ok?'✓ gleich wie direkter Abgleich':'Abweichung'}</span></div>
+  <div class="tbl-scroll"><table><thead><tr><th>Wohnort</th><th class="r">Gruppe</th><th class="r">Treffer exakt</th><th class="r">+ Rauschen (ε ${epsStr(st.eps)})</th><th class="r">veröffentlicht</th></tr></thead><tbody>
+  ${D.H.map((h,i)=>{const n=pub[i][key];return`<tr><td>${esc(ZONES[h].short)}</td><td class="r num">${fmt(psi.groups[i].length)}</td><td class="r num">${fmt(psi.counts[i])}</td><td class="r num">${fmt(n)}</td><td class="r num">${n<10?'<span class="muted">unter 10</span>':fmt(n)}</td></tr>`}).join('')}
+  </tbody></table></div>
+  <p class="note" style="margin-top:8px">Die exakte Spalte gibt es nur in der Simulation. Im Pilot läuft Zählen und Verrauschen gemeinsam in der sicheren Berechnung (z. B. Private Join and Compute mit Differential Privacy), sodass auch der Arbeitgeber nur die verrauschte Zahl sieht. Je Person werden vier Kennzahlen veröffentlicht, also Laplace-Rauschen mit Skala 4/ε.</p>`;
+}
+
+// ---------- Ebene 2: Kurve ----------
+function renderCurve(){
+  const svg=$('#curve');svg.innerHTML='';
+  const W=560,H=250,pl=44,pr=16,pt=14,pb=34,data=M.curve;
+  const ymax=Math.ceil(Math.max(M.errE1,...data.map(d=>d.err))*1.1*20)/20;
+  const lx=Math.log(.05),hx=Math.log(5),x=e=>pl+(Math.log(e)-lx)/(hx-lx)*(W-pl-pr),y=v=>pt+(1-v/ymax)*(H-pt-pb);
+  for(let g=0;g<=ymax+1e-9;g+=ymax/4){S('line',{x1:pl,x2:W-pr,y1:y(g),y2:y(g),style:'stroke:var(--line);stroke-width:1'},svg);const t=S('text',{x:pl-6,y:y(g)+4,'text-anchor':'end',style:'fill:var(--muted);font-size:11px;font-family:var(--sans)'},svg);t.textContent=pct(g,0)}
+  for(const e of [.05,.1,.2,.5,1,2,5]){const t=S('text',{x:x(e),y:H-14,'text-anchor':'middle',style:'fill:var(--muted);font-size:11px;font-family:var(--sans)'},svg);t.textContent=String(e).replace('.',',')}
+  const tx=S('text',{x:(pl+W-pr)/2,y:H-1,'text-anchor':'middle',style:'fill:var(--ink-2);font-size:11px;font-family:var(--sans)'},svg);tx.textContent='ε (logarithmisch) · links mehr Schutz, rechts mehr Genauigkeit';
+  S('line',{x1:pl,x2:W-pr,y1:y(M.errE1),y2:y(M.errE1),style:'stroke:var(--muted);stroke-width:2'},svg);
+  const t1=S('text',{x:W-pr,y:y(M.errE1)-6,'text-anchor':'end',style:'fill:var(--ink-2);font-size:11.5px;font-family:var(--sans);font-weight:600'},svg);t1.textContent='Ebene 1 allein';
+  S('path',{d:data.map((d,i)=>(i?'L':'M')+x(d.eps).toFixed(1)+','+y(d.err).toFixed(1)).join(''),style:'fill:none;stroke:var(--m-auto);stroke-width:2;stroke-linejoin:round'},svg);
+  const ce=Math.min(5,Math.max(.05,st.eps));
+  // aktueller Wert: interpolieren
+  let cur=data[data.length-1].err;for(let i=0;i<data.length-1;i++){if(ce>=data[i].eps&&ce<=data[i+1].eps){const t=(Math.log(ce)-Math.log(data[i].eps))/(Math.log(data[i+1].eps)-Math.log(data[i].eps));cur=data[i].err+(data[i+1].err-data[i].err)*t;break}}
+  S('line',{x1:x(ce),x2:x(ce),y1:pt,y2:H-pb,style:'stroke:var(--line-strong);stroke-width:1'},svg);
+  S('circle',{cx:x(ce),cy:y(cur),r:5,style:'fill:var(--m-auto);stroke:var(--surface);stroke-width:2'},svg);
+  const lab=S('text',{x:x(ce)+(ce>2?-8:8),y:y(cur)-10,'text-anchor':ce>2?'end':'start',style:'fill:var(--ink);font-size:12px;font-family:var(--sans);font-weight:700'},svg);lab.textContent='Ebene 1 + 2: '+pct(cur,0);
+  $('#curveLegend').innerHTML=`<span><i class="sw" style="background:var(--m-auto)"></i>Ebene 1 + 2</span><span><i class="sw" style="background:var(--muted)"></i>Ebene 1 allein</span>`;
+  $('#epsNote').textContent=`aktuell ε = ${epsStr(st.eps)}`;
+  // Hover: nächster Punkt
+  const hit=S('rect',{x:pl,y:pt,width:W-pl-pr,height:H-pt-pb,style:'fill:transparent'},svg);
+  hit.addEventListener('mousemove',ev=>{const r=svg.getBoundingClientRect(),px=(ev.clientX-r.left)/r.width*W;let best=data[0];for(const d of data)if(Math.abs(x(d.eps)-px)<Math.abs(x(best.eps)-px))best=d;
+    showTip(ev,`<div class="tt">ε = ${epsStr(best.eps)}</div><table><tr><td>Ebene 1 + 2</td><td class="r">${pct(best.err)}</td></tr><tr><td>Ebene 1 allein</td><td class="r">${pct(M.errE1)}</td></tr></table>`)});
+  hit.addEventListener('mouseleave',hideTip);
+}
+
+// ---------- Hash-Umkehr ----------
+let hashTargets=[],hashBusy=false;
+function initHash(){
+  const pw=M.persons.filter(p=>p.mode==='pw'&&p.plate&&p.plate.startsWith('KN-')).slice(0,5);
+  hashTargets=pw.map(p=>({plate:p.plate,hex:sha256Hex(p.plate),found:null}));
+  renderHash();$('#hashInfo').textContent='';$('#hashProg').style.width='0';$('#hashGo').disabled=false;
+}
+function renderHash(){$('#hashList').innerHTML=hashTargets.map(t=>`<div><span class="h">${t.hex}</span><span class="p ${t.found?'found':''}">${t.found?esc(t.found):'?'}</span></div>`).join('')}
+async function runHash(){
+  if(hashBusy)return;hashBusy=true;$('#hashGo').disabled=true;
+  const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ',combos=[];for(const a of L)combos.push(a);for(const a of L)for(const b of L)combos.push(a+b);
+  const map=new Map();hashTargets.forEach(t=>{t.found=null;const w0=parseInt(t.hex.slice(0,8),16);map.set(w0,t)});renderHash();
+  const buf=new Uint8Array(64),out=new Uint32Array(8),t0=performance.now();let n=0,left=hashTargets.length;
+  for(let ci=0;ci<combos.length&&left>0;ci++){
+    const pre='KN-'+combos[ci]+' ';for(let i=0;i<pre.length;i++)buf[i]=pre.charCodeAt(i);const pl=pre.length;
+    for(let num=1;num<=9999;num++){
+      let len=pl;if(num>=1000)buf[len++]=48+((num/1000)|0);if(num>=100)buf[len++]=48+(((num/100)|0)%10);if(num>=10)buf[len++]=48+(((num/10)|0)%10);buf[len++]=48+num%10;
+      sha256Bytes(buf,len,out);n++;
+      const t=map.get(out[0]);
+      if(t&&!t.found){const s=String.fromCharCode(...buf.subarray(0,len));if(sha256Hex(s)===t.hex){t.found=s;left--;renderHash()}}
+    }
+    if(ci%12===0){$('#hashProg').style.width=(ci/combos.length*100)+'%';$('#hashInfo').textContent=`${fmt(n)} Kennzeichen probiert …`;await new Promise(r=>setTimeout(r,0))}
+  }
+  const dt=(performance.now()-t0)/1000;$('#hashProg').style.width='100%';
+  const rate=n/dt;
+  $('#hashInfo').innerHTML=`${hashTargets.filter(t=>t.found).length} von ${hashTargets.length} Kennzeichen gefunden: ${fmt(n)} Versuche in ${dt.toFixed(1).replace('.',',')} s (${fmt(rate/1e6*10)/10} Mio. pro Sekunde, ein Browser-Tab). Eine Grafikkarte schafft rund 10 Milliarden pro Sekunde. Alle rund 26 Mio. Schweizer Kennzeichen dauern dort Millisekunden. Darum: Verblindung mit geheimen Schlüsseln (PSI) oder ein Schlüssel-HMAC bei einer dritten Stelle, nie einfache Hashes.`;
+  hashBusy=false;$('#hashGo').disabled=false;$('#hashGo').textContent='Noch einmal';
+}
+
+// ---------- Steuerung ----------
+function setSeg(sel,val){document.querySelectorAll(sel+' button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===String(val))))}
+function bindSeg(sel,fn){document.querySelectorAll(sel+' button').forEach(b=>b.addEventListener('click',()=>{setSeg(sel,b.dataset.v);fn(b.dataset.v)}))}
+function renderChips(){
+  $('#modeChips').innerHTML=MODES.map((m,i)=>`<button type="button" class="chip" data-i="${i}" aria-pressed="${!!st.modes[i]}"><i class="sw" style="background:var(${MODE_VAR[i]})"></i>${m.label}</button>`).join('');
+  document.querySelectorAll('#modeChips .chip').forEach(c=>c.addEventListener('click',()=>{const i=+c.dataset.i;st.modes[i]=st.modes[i]?0:1;if(!st.modes.some(Boolean))st.modes[i]=1;renderChips();drawMap()}));
+}
+function selectTab(t){
+  st.tab=t;document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t)));
+  for(const v of ['ueberblick','halter','ebene1','ebene2'])$('#view-'+v).hidden=v!==t;
+  store('gp-tab',t);hideTip();
+}
+let epsRaf=0;
+function onEps(){
+  st.eps=epsFromSlider(+$('#eps').value);$('#epsVal').textContent='ε = '+epsStr(st.eps);
+  cancelAnimationFrame(epsRaf);epsRaf=requestAnimationFrame(()=>{E12=estimateE12(M,st.eps,0);renderOverview();renderCurve();renderPSIResult()});
+}
+function rebuild(){
+  const seed=Math.max(1,Math.min(999999,parseInt($('#seed').value,10)||2026));
+  M=buildModel(seed);E12=estimateE12(M,st.eps,0);
+  st.ssStep=0;ss.shares=null;
+  renderOverview();renderHolders();renderSS();renderIPF();renderCurve();psiInit();initHash();
+}
+function init(){
+  initMap();renderChips();
+  bindSeg('#scSeg',v=>{st.sc=v;drawMap()});
+  bindSeg('#dirSeg',v=>{st.dir=+v;drawMap();renderModal()});
+  $('#diffChk').addEventListener('change',e=>{st.diff=e.target.checked;if(st.diff&&st.sc==='truth'){st.sc='e12';setSeg('#scSeg','e12')}drawMap()});
+  $('#thr').addEventListener('input',e=>{st.thr=+e.target.value;$('#thrVal').textContent=st.thr;drawMap()});
+  $('#eps').addEventListener('input',onEps);
+  st.eps=epsFromSlider(+$('#eps').value);$('#epsVal').textContent='ε = '+epsStr(st.eps);
+  $('#seed').addEventListener('change',rebuild);
+  $('#reroll').addEventListener('click',()=>{$('#seed').value=1+Math.floor(Math.random()*99999);rebuild()});
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>{selectTab(b.dataset.tab);try{history.replaceState(null,'','#'+b.dataset.tab)}catch(e){}}));
+  bindSeg('#ssDir',v=>{st.ssDir=+v;st.ssStep=0;ss.shares=null;renderSS()});
+  $('#ssNext').addEventListener('click',()=>{if(st.ssStep<3){st.ssStep++;renderSS()}});
+  $('#ssReset').addEventListener('click',()=>{st.ssStep=0;ss.shares=null;renderSS()});
+  $('#ipfIt').addEventListener('input',e=>{st.ipfIt=+e.target.value;renderIPF()});
+  bindSeg('#psiEmp',v=>{if(psiBusy)return;st.psiEmp=v;psiInit()});
+  bindSeg('#psiPartner',v=>{if(psiBusy)return;st.psiPartner=v;psiInit()});
+  $('#psiNext').addEventListener('click',psiStep);
+  $('#psiAll').addEventListener('click',async()=>{while(psi.step<4){await psiStep()}});
+  $('#psiReset').addEventListener('click',()=>{if(!psiBusy)psiInit()});
+  $('#hashGo').addEventListener('click',runHash);
+  const rerenderTheme=()=>{if(M){renderIPF()}};
+  try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',rerenderTheme)}catch(e){}
+  new MutationObserver(rerenderTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+  rebuild();
+  const h=(location.hash||'').slice(1),saved=store('gp-tab');
+  const t=['ueberblick','halter','ebene1','ebene2'].includes(h)?h:(['ueberblick','halter','ebene1','ebene2'].includes(saved)?saved:'ueberblick');
+  selectTab(t);
+}
+init();
+</script>
+</body>
+</html>
