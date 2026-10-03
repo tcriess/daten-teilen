@@ -203,6 +203,7 @@ footer{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);font-si
 .story{max-width:880px;margin:0 auto}
 .story .intro{padding-block:4px 32px;display:grid;gap:18px}
 .big{font-size:19px;line-height:1.55;max-width:66ch}
+#stHashMode{flex-wrap:wrap}
 .toc{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
 .toc button{width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:5px;padding:8px 10px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--ink-2)}
 .toc button:hover{background:var(--hover);color:var(--ink)}
@@ -350,6 +351,7 @@ details.math input[type=number]{width:64px}
       <h2>Wie kommen die Leute morgens nach Kreuzlingen?</h2>
       <p>Jeden Morgen pendeln Tausende aus dem Landkreis Konstanz in den Thurgau. Wie viele davon fahren Auto, Bus, Bahn oder Rad, oder gehen zu Fuß? Davon hängt ab, wo ein neuer Bus fahren sollte, wie viel Parkraum es braucht und wo sich ein Radweg lohnt.</p>
       <p>An den Übergängen stehen Zählstellen. Sie zählen viele Fußgänger. Ein Teil dieser Fußgänger ist aber mit dem Auto gekommen: Wer in Singen losfährt, parkt in Konstanz und geht die letzten Meter zu Fuß über die Grenze. Dieses <b>Park &amp; Walk</b> taucht in keiner Zählung als Autofahrt auf.</p>
+      <p>Wie viele das sind, weiß niemand, gut möglich, dass es wenige sind. Hier ist Park &amp; Walk ein Beispiel für eine ganze Art von Fragen: alles, wofür man zwei Datensätze über dieselben Menschen verbinden müsste. Etwa auch, ob ausgegebene Jobtickets wirklich für die Fahrt über die Grenze genutzt werden.</p>
       <div class="fig">
         <div class="pw">
           <div class="seg-a">Auto<span>Singen → Parkhaus Konstanz</span></div>
@@ -389,27 +391,36 @@ details.math input[type=number]{width:64px}
 
     <article class="chapter" id="ch-naiv">
       <div class="eyebrow">3 · Die naheliegenden Wege</div>
-      <h2>Und warum sie nicht funktionieren</h2>
+      <h2>Und wo sie an Grenzen stoßen</h2>
       <div class="nope">
         <article><h3><span class="x">✗</span>Liste rüberschicken</h3><p>Dann hat eine Seite beide Listen. Genau das ist nicht erlaubt.</p></article>
         <article><h3><span class="x">✗</span>Treuhänder</h3><p>Eine dritte Stelle bekommt beide Listen. Das verschiebt das Problem nur: Auch sie braucht eine Rechtsgrundlage, und ein Datenleck dort trifft alle.</p></article>
-        <article><h3><span class="x">✗</span>Kennzeichen hashen</h3><p>Aus dem Kennzeichen wird eine Prüfsumme, die man nicht zurückrechnen kann. Klingt sicher. Probieren wir es aus.</p></article>
+        <article><h3><span class="x" style="color:var(--warn-ink)">?</span>Pseudonymisieren</h3><p>Aus jedem Kennzeichen wird eine Prüfsumme (Hash), am besten mit Salz. Beide Seiten vergleichen nur Prüfsummen. Das ist der ernsthafteste Kandidat, schauen wir genauer hin.</p></article>
       </div>
       <div class="fig">
-        <p class="cap">Das Parkhaus „pseudonymisiert“ seine Liste mit SHA-256 und gibt nur die Prüfsummen weiter. Wer sie bekommt, rechnet einfach alle Kennzeichen des Landkreises durch, von KN-A 1 bis KN-ZZ 9999.</p>
+        <div class="seg" id="stHashMode" role="group" aria-label="Variante">
+          <button type="button" data-v="plain" aria-pressed="true">Ohne Salz</button>
+          <button type="button" data-v="out" aria-pressed="false">Mit Salz, Angreifer von außen</button>
+          <button type="button" data-v="partner" aria-pressed="false">Mit Salz, aus Sicht des Partners</button>
+        </div>
+        <p class="cap" id="stHashCap"></p>
         <div class="hashrows" id="stHash"></div>
         <div class="steps"><button class="btn primary" id="stHashGo" type="button">Alle Konstanzer Kennzeichen durchprobieren</button></div>
         <div class="progress" aria-hidden="true"><span id="stHashProg"></span></div>
         <p class="note" id="stHashInfo"></p>
       </div>
-      <p>Das Problem: Es gibt nur ein paar Millionen mögliche Kennzeichen, und die Hash-Funktion ist öffentlich. Wer alle durchprobiert, hat die Liste zurück. Ein Hash schützt hier nicht, er kostet nur ein paar Sekunden.</p>
+      <div class="prose">
+        <p>Ein Salz hilft also, aber nur gegen Außenstehende. Gegen den Partner hilft es nicht: Damit gleiche Kennzeichen auf beiden Seiten gleiche Prüfsummen ergeben, müssen beide dasselbe Salz verwenden. Wer es kennt, probiert eben mit Salz durch. Bei ein paar Millionen möglichen Kennzeichen dauert das Sekunden.</p>
+        <p>Man kann das Salz bei einer dritten Stelle lassen, die für beide Seiten pseudonymisiert. So arbeiten etwa Vertrauensstellen in der Gesundheitsforschung, und das ist ein gangbarer Weg. Er hat aber zwei Haken: Die Stelle bekommt alle Kennzeichen im Klartext. Und wer danach die Pseudonyme vergleicht, sieht, <i>welche</i> Einträge zusammenpassen, nicht nur <i>wie viele</i>.</p>
+      </div>
+      <p class="ask">Und wenn jede Seite ihr eigenes Salz hat und es nie herausgibt? Dann passen die Prüfsummen nicht mehr zusammen. Es sei denn, man rechnet geschickt.</p>
     </article>
 
     <article class="chapter" id="ch-psi">
       <div class="eyebrow">4 · Trick 1: Private Schnittmenge (PSI)</div>
       <h2>Schlösser, bei denen die Reihenfolge egal ist</h2>
       <div class="prose">
-        <p>Die Idee: Jede Seite hat einen <b>geheimen Schlüssel</b>, den sie nie herausgibt. Damit verwandelt sie ein Kennzeichen in eine lange, zufällig aussehende Zahl. Wir nennen das <i>verblinden</i>. Durchprobieren hilft jetzt nicht mehr, denn dazu bräuchte man den Schlüssel.</p>
+        <p>Die Idee: Jede Seite hat einen <b>geheimen Schlüssel</b>, eine Art privates Salz, das sie nie herausgibt. Damit verwandelt sie ein Kennzeichen in eine lange, zufällig aussehende Zahl. Wir nennen das <i>verblinden</i>. Durchprobieren hilft jetzt nicht mehr, auch dem Partner nicht, denn dazu bräuchte er den Schlüssel.</p>
         <p>Der Kniff: Zwei Verblindungen lassen sich vertauschen. Erst mit Schlüssel a, dann mit b ergibt genau dieselbe Zahl wie erst mit b, dann mit a. Das ist wie Farbe mischen: Gelb in Blau oder Blau in Gelb, es wird dasselbe Grün, und entmischen kann es niemand.</p>
         <p>Gleiche Kennzeichen werden also zu gleichen Zahlen, aber nur, wenn <i>beide</i> Schlüssel darauf angewendet wurden. Gehen Sie das Protokoll Schritt für Schritt durch und achten Sie darauf, was jede Seite zu sehen bekommt.</p>
       </div>
@@ -1231,17 +1242,17 @@ function initHash(){
 }
 function renderHash(){$('#hashList').innerHTML=hashTargets.map(t=>`<div><span class="h">${t.hex}</span><span class="p ${t.found?'found':''}">${t.found?esc(t.found):'?'}</span></div>`).join('')}
 // probiert KN-A 1 bis KN-ZZ 9999
-async function crackKN(targets,onHit,onTick){
+async function crackKN(targets,onHit,onTick,salt=''){
   const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ',combos=[];for(const a of L)combos.push(a);for(const a of L)for(const b of L)combos.push(a+b);
   const map=new Map();targets.forEach(t=>{t.found=null;map.set(parseInt(t.hex.slice(0,8),16),t)});
   const buf=new Uint8Array(64),out=new Uint32Array(8),t0=performance.now();let n=0,left=targets.length;
   for(let ci=0;ci<combos.length&&left>0;ci++){
-    const pre='KN-'+combos[ci]+' ';for(let i=0;i<pre.length;i++)buf[i]=pre.charCodeAt(i);const pl=pre.length;
+    const pre=salt+'KN-'+combos[ci]+' ';for(let i=0;i<pre.length;i++)buf[i]=pre.charCodeAt(i);const pl=pre.length;
     for(let num=1;num<=9999;num++){
       let len=pl;if(num>=1000)buf[len++]=48+((num/1000)|0);if(num>=100)buf[len++]=48+(((num/100)|0)%10);if(num>=10)buf[len++]=48+(((num/10)|0)%10);buf[len++]=48+num%10;
       sha256Bytes(buf,len,out);n++;
       const t=map.get(out[0]);
-      if(t&&!t.found){const s=String.fromCharCode(...buf.subarray(0,len));if(sha256Hex(s)===t.hex){t.found=s;left--;onHit(t)}}
+      if(t&&!t.found){const s=String.fromCharCode(...buf.subarray(0,len));if(sha256Hex(s)===t.hex){t.found=s.slice(salt.length);left--;onHit(t)}}
     }
     if(ci%12===0){onTick(n,ci/combos.length);await new Promise(r=>setTimeout(r,0))}
   }
@@ -1271,19 +1282,31 @@ function renderSilos(){
   $('#siloPeek').textContent=peek?'Wieder verbergen':'Trotzdem kurz spicken';
 }
 
-// Hash-Umkehr im Kleinen
-let stHash=[],stHashBusy=false;
+// Hash-Umkehr im Kleinen: ohne Salz, mit Salz von außen, mit Salz als Partner
+let stHash=[],stHashBusy=false,stMode='plain',stSalt='';
+const ST_CAP={
+  plain:'Das Parkhaus gibt nur SHA-256-Prüfsummen weiter. Wer sie bekommt, rechnet alle Kennzeichen des Landkreises durch, von KN-A 1 bis KN-ZZ 9999.',
+  out:'Jetzt hängt das Parkhaus vor dem Hashen ein geheimes Salz an. Ein Außenstehender, der die Liste abfängt, kennt es nicht und probiert ohne.',
+  partner:'Der Arbeitgeber soll seine Kennzeichen mit demselben Salz hashen, sonst passt nichts zusammen. Also kennt er es und kann damit genauso durchprobieren.'};
+function setStHash(){
+  stHash=T_PARK.map(r=>({hex:sha256Hex((stMode==='plain'?'':stSalt)+r[0]),kn:r[0].startsWith('KN-'),found:null}));
+  $('#stHashCap').textContent=ST_CAP[stMode];$('#stHashInfo').textContent='';$('#stHashProg').style.width='0';
+  $('#stHashGo').textContent='Alle Konstanzer Kennzeichen durchprobieren';renderStHash();
+}
 function renderStHash(){
-  $('#stHash').innerHTML=`<div class="head"><span>SHA-256 (weitergegeben)</span><span>Einfahrt</span><span>Dauer</span><span style="text-align:right">Klartext</span></div>`+
+  $('#stHash').innerHTML=`<div class="head"><span>${stMode==='plain'?'SHA-256':'SHA-256 mit Salz'} (weitergegeben)</span><span>Einfahrt</span><span>Dauer</span><span style="text-align:right">Klartext</span></div>`+
     T_PARK.map((r,i)=>{const t=stHash[i];return`<div><span class="h">${t.hex}</span><span>${r[1]}</span><span>${r[2]}</span><span class="p ${t.found?'found':''}">${t.found?esc(t.found):t.kn?'?':'<span class="muted" style="font-weight:400">anderer Kreis</span>'}</span></div>`}).join('');
 }
 async function runStHash(){
-  if(stHashBusy)return;stHashBusy=true;$('#stHashGo').disabled=true;
+  if(stHashBusy)return;stHashBusy=true;$('#stHashGo').disabled=true;document.querySelectorAll('#stHashMode button').forEach(b=>b.disabled=true);
   const targets=stHash.filter(t=>t.kn);
-  const {n,dt}=await crackKN(targets,renderStHash,(n,f)=>{$('#stHashProg').style.width=(f*100)+'%';$('#stHashInfo').textContent=`${fmt(n)} Kennzeichen probiert …`});
+  const {n,dt}=await crackKN(targets,renderStHash,(n,f)=>{$('#stHashProg').style.width=(f*100)+'%';$('#stHashInfo').textContent=`${fmt(n)} Kennzeichen probiert …`},stMode==='partner'?stSalt:'');
   $('#stHashProg').style.width='100%';
-  $('#stHashInfo').textContent=`Alle ${targets.length} Konstanzer Kennzeichen zurückgerechnet: ${fmt(n)} Versuche in ${dt.toFixed(1).replace('.',',')} Sekunden, in einem Browser-Tab. Die anderen Kreise gehen genauso schnell.`;
-  stHashBusy=false;$('#stHashGo').disabled=false;$('#stHashGo').textContent='Noch einmal';
+  const sec=dt.toFixed(1).replace('.',','),hits=targets.filter(t=>t.found).length;
+  $('#stHashInfo').textContent=hits
+    ?`${hits} von ${targets.length} Konstanzer Kennzeichen zurückgerechnet: ${fmt(n)} Versuche in ${sec} Sekunden, in einem Browser-Tab.${stMode==='partner'?' Das Salz hat gegen den Partner nichts genützt.':' Die anderen Kreise gehen genauso schnell.'}`
+    :`Alle ${fmt(n)} Konstanzer Kennzeichen probiert, ${sec} Sekunden, kein einziger Treffer. Ohne das Salz ist die Liste wertlos.`;
+  stHashBusy=false;$('#stHashGo').disabled=false;$('#stHashGo').textContent='Noch einmal';document.querySelectorAll('#stHashMode button').forEach(b=>b.disabled=false);
 }
 
 // PSI im Kleinen
@@ -1390,7 +1413,8 @@ function renderSum(){
 
 function initStory(){
   renderSilos();$('#siloPeek').addEventListener('click',()=>{peek=!peek;renderSilos()});
-  stHash=T_PARK.map(r=>({hex:sha256Hex(r[0]),kn:r[0].startsWith('KN-'),found:null}));renderStHash();
+  stSalt=Array.from({length:2},()=>hex8(rnd32())).join('');setStHash();
+  bindSeg('#stHashMode',v=>{if(stHashBusy)return;stMode=v;setStHash()});
   $('#stHashGo').addEventListener('click',runStHash);
   stPsiInit();
   $('#stPsiNext').addEventListener('click',()=>{if(sp.step<4){sp.step++;renderStPsi()}});

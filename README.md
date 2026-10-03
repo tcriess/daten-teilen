@@ -8,7 +8,7 @@ Klickbarer Prototyp für Crossing Forward 2026: Was Konstanz und Kreuzlingen üb
 
 Die Antwort auf „Wer pendelt wie über die Grenze?“ liegt verteilt. Das Parkhaus in Konstanz kennt Kennzeichen, aber keine Arbeitsorte. Der Arbeitgeber in Kreuzlingen kennt seine Beschäftigten, weiß aber nicht, wie sie zur Arbeit kommen. Erst zusammen zeigen die beiden zum Beispiel, wie viele mit dem Auto bis Konstanz fahren und dann zu Fuß über die Grenze gehen („Park & Walk“). An den Zählstellen erscheinen diese Menschen nur als Fußgänger.
 
-Weitergeben darf aber keiner seine Daten: Kennzeichen und Personaldaten sind personenbezogen (DSGVO, Schweizer DSG), wurden für einen anderen Zweck erhoben und müssten dafür über die Grenze. Einen Treuhänder einzuschalten verschiebt das Problem nur. Und gehashte Kennzeichen lassen sich in Sekunden zurückrechnen.
+Weitergeben darf aber keiner seine Daten: Kennzeichen und Personaldaten sind personenbezogen (DSGVO, Schweizer DSG), wurden für einen anderen Zweck erhoben und müssten dafür über die Grenze. Einen Treuhänder einzuschalten verschiebt das Problem nur. Gehashte Kennzeichen lassen sich in Sekunden zurückrechnen. Ein Salz schützt gegen Außenstehende, aber nicht gegen den Partner, der dasselbe Salz kennen muss. Liegt das Salz bei einer dritten Stelle, sieht diese die Klartexte, und beim Vergleich wird sichtbar, welche Einträge zusammenpassen, nicht nur wie viele. PSI ist im Grunde die Lösung dafür: Jede Seite hat ihr eigenes, geheimes Salz.
 
 ## Die Lösung
 
@@ -24,7 +24,7 @@ Dazu kommt IPF (iteratives proportionales Anpassen), das aus offenen Randsummen 
 
 ## Aufbau der Seite
 
-- **Worum es geht**: eine Einführung in sieben Schritten mit einem kleinen Beispiel (7 Parkhaus-Einträge, 6 Beschäftigte). Man kann spicken, gehashte Kennzeichen zurückrechnen, das PSI-Protokoll Schritt für Schritt durchgehen und dabei sehen, was jede Seite weiß, das Rauschen mit ε einstellen und eine sichere Summe aufteilen.
+- **Worum es geht**: eine Einführung in sieben Schritten mit einem kleinen Beispiel (7 Parkhaus-Einträge, 6 Beschäftigte). Man kann spicken, gehashte Kennzeichen mit und ohne Salz zurückrechnen, das PSI-Protokoll Schritt für Schritt durchgehen und dabei sehen, was jede Seite weiß, das Rauschen mit ε einstellen und eine sichere Summe aufteilen.
 - **Überblick**: das Ergebnis mit rund 5 000 synthetischen Pendelnden. Karte, Verkehrsmittelanteile und Fehler im Vergleich: Wahrheit (nur im Generator) gegen Ebene 1 (nur Summen) gegen Ebene 1 + 2 (mit privaten Schnittmengen).
 - **Datenhalter**: was bei wem liegt und was das Haus verlässt.
 - **E1 Ohne Verknüpfung**: sichere Summe über drei Rechenstellen und IPF mit Iterationsregler.
