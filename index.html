@@ -197,6 +197,86 @@ ol.proto li.next::before{border-color:var(--ink)}
 #tip table td{padding:1px 4px;border:0;font-variant-numeric:tabular-nums}
 footer{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);display:grid;gap:4px}
 
+[hidden]{display:none!important}
+
+/* einführung */
+.story{max-width:880px;margin:0 auto}
+.story .intro{padding-block:4px 32px;display:grid;gap:18px}
+.big{font-size:19px;line-height:1.55;max-width:66ch}
+.toc{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
+.toc button{width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:5px;padding:8px 10px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--ink-2)}
+.toc button:hover{background:var(--hover);color:var(--ink)}
+.toc .n{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-right:8px}
+.chapter{padding-block:40px;border-top:1px solid var(--line);display:grid;gap:14px;scroll-margin-top:12px}
+.chapter h2{font-size:27px;font-weight:750;letter-spacing:-.01em}
+.chapter>p,.chapter .prose p{font-size:16px;line-height:1.62;max-width:68ch}
+.chapter .prose{display:grid;gap:12px}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:grid;gap:12px}
+.fig .cap{font-size:12.5px;color:var(--ink-2)}
+.ask{border-left:3px solid var(--ink);padding:12px 16px;background:var(--surface-2);border-radius:0 4px 4px 0;font-size:17px;font-weight:650;line-height:1.45;max-width:68ch}
+.pw{display:grid;grid-template-columns:1.3fr 1fr;gap:0;position:relative;margin-top:22px}
+.pw .seg-a,.pw .seg-b{padding:10px 12px;font-size:13px;color:#fff;font-weight:650;display:grid;gap:2px}
+.pw .seg-a{background:var(--m-auto);border-radius:4px 0 0 4px}
+.pw .seg-b{background:var(--m-pw);border-radius:0 4px 4px 0;position:relative;padding-left:36px}
+.pw .seg-a span,.pw .seg-b span{font-weight:500;opacity:.9;font-size:12px}
+.pw .bline{position:absolute;left:16px;top:-22px;bottom:-6px;border-left:2px dashed var(--border-line)}
+.pw .blab{position:absolute;left:22px;top:-22px;font-size:11.5px;font-weight:650;color:var(--border-line)}
+.pw-sees{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pw-sees div{font-size:12.5px;color:var(--ink-2);border-top:2px solid var(--line-strong);padding-top:6px}
+.pw-sees b{display:block;color:var(--ink);font-size:13px}
+.silos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.silo{border:1px solid var(--line-strong);border-radius:6px;padding:14px;display:grid;gap:10px;align-content:start;background:var(--surface)}
+.silo .who{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.silo table td,.silo table th{padding:4px 6px;font-size:12.5px}
+.silo table td{font-family:var(--mono);font-size:12px}
+.silo tr.hl td{background:var(--warn-bg);color:var(--warn-ink)}
+.silo tr.off td{color:var(--muted)}
+.why{margin:0;padding-left:18px;font-size:12.5px;color:var(--ink-2);display:grid;gap:2px}
+.lockbar{font-size:11.5px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--over)}
+.nope{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.nope article{border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--surface);display:grid;gap:6px;align-content:start}
+.nope h3 .x{color:var(--over);margin-right:6px}
+.nope p{font-size:13px;color:var(--ink-2)}
+.hashrows{display:grid;gap:0;font-family:var(--mono);font-size:12px}
+.hashrows div{display:grid;grid-template-columns:minmax(0,1fr) 4.5em 4.5em 8.5em;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.hashrows .h{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-2)}
+.hashrows .p{text-align:right;font-weight:600;white-space:nowrap}
+.hashrows .p.found{color:var(--over)}
+.hashrows .head{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--ink-2)}
+.tok{display:inline-block;font-family:var(--mono);font-size:11px;padding:1px 6px;border-radius:3px;border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.tok.c{background:hsl(var(--h) 65% 86%);border-color:hsl(var(--h) 45% 62%);color:#15191b}
+.tok.hit{outline:2px solid var(--ink);outline-offset:1px;font-weight:600}
+.toks{display:flex;flex-wrap:wrap;gap:5px}
+.pstep{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pcard{border:1px solid var(--line-strong);border-radius:6px;padding:12px;display:grid;gap:8px;align-content:start;background:var(--surface)}
+.pcard .who{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.plist{display:grid;gap:4px;font-family:var(--mono);font-size:11.5px}
+.plist div{display:grid;grid-template-columns:minmax(0,7.5em) minmax(0,6.5em) 1.2em auto;gap:4px;align-items:center;white-space:nowrap}
+.plist div span{overflow:hidden;text-overflow:ellipsis}
+.plist .arr{color:var(--muted);text-align:center}
+.plist .off{color:var(--muted)}
+.k{font-size:11px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.wire{font-size:13px;min-height:44px;display:grid;gap:4px}
+.wire .msg{font-weight:650}
+.knows{font-size:12.5px;color:var(--ink-2);border-top:1px solid var(--line);padding-top:8px}
+.knows b{color:var(--ink)}
+.result-big{font-size:22px;font-weight:750;font-stretch:85%}
+details.math{border:1px solid var(--line);border-radius:6px;padding:10px 14px;background:var(--surface)}
+details.math summary{cursor:pointer;font-weight:650;font-size:14px}
+details.math .body{display:grid;gap:10px;margin-top:10px;font-size:14px;max-width:68ch}
+details.math input[type=number]{width:64px}
+.eq{font-family:var(--mono);font-size:13px;background:var(--surface-2);border-radius:4px;padding:8px 10px;display:grid;gap:2px}
+.linkbtn{background:none;border:0;padding:0;color:var(--focus);text-decoration:underline;text-underline-offset:2px;cursor:pointer;font:inherit}
+.cta{display:flex;flex-wrap:wrap;gap:8px}
+.sum-tbl td{font-family:var(--mono)}
+.sum-tbl td.lbl{font-family:var(--sans)}
+.sum-tbl tr.tot td{border-top:1px solid var(--line-strong);font-weight:650}
+.map3{display:grid;gap:0}
+.map3 .r{display:grid;grid-template-columns:1.1fr 1.1fr 1fr 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;align-items:start}
+.map3 .r.h{font-size:12px;font-weight:600;color:var(--ink-2);padding-top:0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tok.c{background:hsl(var(--h) 38% 30%);border-color:hsl(var(--h) 38% 46%);color:#f1f3f1}}
+:root[data-theme="dark"] .tok.c{background:hsl(var(--h) 38% 30%);border-color:hsl(var(--h) 38% 46%);color:#f1f3f1}
+
 @media (max-width:1050px){
   .ov-grid,.two{grid-template-columns:minmax(0,1fr)}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -204,7 +284,10 @@ footer{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);font-si
 @media (max-width:620px){
   .wrap{padding-inline:16px}
   .kpis{grid-template-columns:minmax(0,1fr)}
-  .heat-wrap,.psi-cols{grid-template-columns:minmax(0,1fr)}
+  .heat-wrap,.psi-cols,.silos,.nope,.pstep,.pw-sees{grid-template-columns:minmax(0,1fr)}
+  .map3 .r{grid-template-columns:1fr 1fr}
+  .chapter h2{font-size:23px}
+  .big{font-size:17px}
   input[type=range]{width:140px}
   h1{font-size:23px}
 }
@@ -239,14 +322,186 @@ footer{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);font-si
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Ansichten">
-    <button role="tab" id="tab-ueberblick" aria-selected="true" data-tab="ueberblick">Überblick</button>
+    <button role="tab" id="tab-story" aria-selected="true" data-tab="story">Worum es geht</button>
+    <button role="tab" id="tab-ueberblick" aria-selected="false" data-tab="ueberblick">Überblick</button>
     <button role="tab" id="tab-halter" aria-selected="false" data-tab="halter">Datenhalter</button>
     <button role="tab" id="tab-ebene1" aria-selected="false" data-tab="ebene1"><span class="tnum">E1</span>Ohne Verknüpfung: Summen</button>
     <button role="tab" id="tab-ebene2" aria-selected="false" data-tab="ebene2"><span class="tnum">E2</span>Mit Verknüpfung: Schnittmengen</button>
   </nav>
 
+  <!-- EINFÜHRUNG -->
+  <section id="view-story" role="tabpanel" aria-labelledby="tab-story">
+   <div class="story">
+    <div class="intro">
+      <p class="big">Zwei Organisationen kennen je eine Hälfte der Antwort. Zusammen wüssten sie, wie Menschen über die Grenze pendeln. Aber keine darf ihre Daten der anderen geben. Diese Einführung zeigt an einem kleinen Beispiel, wie sie trotzdem gemeinsam rechnen können, ohne dass eine Seite die Daten der anderen zu sehen bekommt.</p>
+      <ol class="toc" id="toc">
+        <li><button type="button" data-goto="ch-frage"><span class="n">1</span>Die Frage</button></li>
+        <li><button type="button" data-goto="ch-silos"><span class="n">2</span>Zwei Datensilos</button></li>
+        <li><button type="button" data-goto="ch-naiv"><span class="n">3</span>Die naheliegenden Wege</button></li>
+        <li><button type="button" data-goto="ch-psi"><span class="n">4</span>Trick 1: vertauschbare Schlösser</button></li>
+        <li><button type="button" data-goto="ch-dp"><span class="n">5</span>Trick 2: kontrolliertes Rauschen</button></li>
+        <li><button type="button" data-goto="ch-sum"><span class="n">6</span>Trick 3: Summen aus Zufallsteilen</button></li>
+        <li><button type="button" data-goto="ch-alle"><span class="n">7</span>Alles zusammen</button></li>
+      </ol>
+    </div>
+
+    <article class="chapter" id="ch-frage">
+      <div class="eyebrow">1 · Die Frage</div>
+      <h2>Wie kommen die Leute morgens nach Kreuzlingen?</h2>
+      <p>Jeden Morgen pendeln Tausende aus dem Landkreis Konstanz in den Thurgau. Wie viele davon fahren Auto, Bus, Bahn oder Rad, oder gehen zu Fuß? Davon hängt ab, wo ein neuer Bus fahren sollte, wie viel Parkraum es braucht und wo sich ein Radweg lohnt.</p>
+      <p>An den Übergängen stehen Zählstellen. Sie zählen viele Fußgänger. Ein Teil dieser Fußgänger ist aber mit dem Auto gekommen: Wer in Singen losfährt, parkt in Konstanz und geht die letzten Meter zu Fuß über die Grenze. Dieses <b>Park &amp; Walk</b> taucht in keiner Zählung als Autofahrt auf.</p>
+      <div class="fig">
+        <div class="pw">
+          <div class="seg-a">Auto<span>Singen → Parkhaus Konstanz</span></div>
+          <div class="seg-b">zu Fuß<span>Parkhaus → Arbeit in Kreuzlingen</span><div class="bline" aria-hidden="true"></div><div class="blab">Grenze</div></div>
+        </div>
+        <div class="pw-sees">
+          <div><b>Zählstelle an der Grenze</b>sieht einen Fußgänger</div>
+          <div><b>Parkhaus Konstanz</b>sieht ein Kennzeichen, morgens rein, abends raus</div>
+          <div><b>Arbeitgeber in Kreuzlingen</b>weiß, wer bei ihm arbeitet und wo die Person wohnt</div>
+        </div>
+      </div>
+      <p>Die Antwort liegt also nicht an einer Stelle. Das Parkhaus kennt Autos, aber keine Arbeitsorte. Der Arbeitgeber kennt seine Leute, weiß aber nicht, wie sie kommen. Erst beide Hälften zusammen ergeben die Zahl.</p>
+    </article>
+
+    <article class="chapter" id="ch-silos">
+      <div class="eyebrow">2 · Zwei Datensilos</div>
+      <h2>Jeder hat eine Hälfte, keiner darf sie hergeben</h2>
+      <p>Hier ein kleines Beispiel mit erfundenen Daten. Links das Parkhaus in Konstanz, rechts ein Arbeitgeber in Kreuzlingen, der für den Firmenparkplatz die Kennzeichen seiner Leute kennt.</p>
+      <div class="silos">
+        <div class="silo">
+          <div class="who"><h3>Parkhaus Konstanz</h3><span class="flag">DE</span></div>
+          <div class="tbl-scroll"><table id="siloPark"></table></div>
+          <div class="lockbar">Darf nicht raus</div>
+          <ul class="why"><li>Kennzeichen sind personenbezogene Daten (DSGVO).</li><li>Erfasst für die Abrechnung, nicht für Statistik.</li><li>Eine Weitergabe in die Schweiz braucht eine eigene Rechtsgrundlage.</li></ul>
+        </div>
+        <div class="silo">
+          <div class="who"><h3>Arbeitgeber A, Kreuzlingen</h3><span class="flag">CH</span></div>
+          <div class="tbl-scroll"><table id="siloHR"></table></div>
+          <div class="lockbar">Darf nicht raus</div>
+          <ul class="why"><li>Personaldaten, geschützt durch das Schweizer Datenschutzgesetz.</li><li>Wohnort und Kennzeichen zusammen identifizieren eine Person eindeutig.</li><li>Die Belegschaft muss dem Arbeitgeber vertrauen können.</li></ul>
+        </div>
+      </div>
+      <p class="ask">Die gesuchte Zahl ist die Schnittmenge: Wie viele Kennzeichen stehen in beiden Listen? Lässt sie sich zählen, ohne dass eine Seite die Liste der anderen sieht?</p>
+      <p>Mit beiden Listen nebeneinander ist das einfach. Aber genau diesen Blick auf beide Listen darf niemand haben. <button type="button" class="linkbtn" id="siloPeek">Trotzdem kurz spicken</button></p>
+      <p class="note" id="siloPeekInfo" hidden></p>
+    </article>
+
+    <article class="chapter" id="ch-naiv">
+      <div class="eyebrow">3 · Die naheliegenden Wege</div>
+      <h2>Und warum sie nicht funktionieren</h2>
+      <div class="nope">
+        <article><h3><span class="x">✗</span>Liste rüberschicken</h3><p>Dann hat eine Seite beide Listen. Genau das ist nicht erlaubt.</p></article>
+        <article><h3><span class="x">✗</span>Treuhänder</h3><p>Eine dritte Stelle bekommt beide Listen. Das verschiebt das Problem nur: Auch sie braucht eine Rechtsgrundlage, und ein Datenleck dort trifft alle.</p></article>
+        <article><h3><span class="x">✗</span>Kennzeichen hashen</h3><p>Aus dem Kennzeichen wird eine Prüfsumme, die man nicht zurückrechnen kann. Klingt sicher. Probieren wir es aus.</p></article>
+      </div>
+      <div class="fig">
+        <p class="cap">Das Parkhaus „pseudonymisiert“ seine Liste mit SHA-256 und gibt nur die Prüfsummen weiter. Wer sie bekommt, rechnet einfach alle Kennzeichen des Landkreises durch, von KN-A 1 bis KN-ZZ 9999.</p>
+        <div class="hashrows" id="stHash"></div>
+        <div class="steps"><button class="btn primary" id="stHashGo" type="button">Alle Konstanzer Kennzeichen durchprobieren</button></div>
+        <div class="progress" aria-hidden="true"><span id="stHashProg"></span></div>
+        <p class="note" id="stHashInfo"></p>
+      </div>
+      <p>Das Problem: Es gibt nur ein paar Millionen mögliche Kennzeichen, und die Hash-Funktion ist öffentlich. Wer alle durchprobiert, hat die Liste zurück. Ein Hash schützt hier nicht, er kostet nur ein paar Sekunden.</p>
+    </article>
+
+    <article class="chapter" id="ch-psi">
+      <div class="eyebrow">4 · Trick 1: Private Schnittmenge (PSI)</div>
+      <h2>Schlösser, bei denen die Reihenfolge egal ist</h2>
+      <div class="prose">
+        <p>Die Idee: Jede Seite hat einen <b>geheimen Schlüssel</b>, den sie nie herausgibt. Damit verwandelt sie ein Kennzeichen in eine lange, zufällig aussehende Zahl. Wir nennen das <i>verblinden</i>. Durchprobieren hilft jetzt nicht mehr, denn dazu bräuchte man den Schlüssel.</p>
+        <p>Der Kniff: Zwei Verblindungen lassen sich vertauschen. Erst mit Schlüssel a, dann mit b ergibt genau dieselbe Zahl wie erst mit b, dann mit a. Das ist wie Farbe mischen: Gelb in Blau oder Blau in Gelb, es wird dasselbe Grün, und entmischen kann es niemand.</p>
+        <p>Gleiche Kennzeichen werden also zu gleichen Zahlen, aber nur, wenn <i>beide</i> Schlüssel darauf angewendet wurden. Gehen Sie das Protokoll Schritt für Schritt durch und achten Sie darauf, was jede Seite zu sehen bekommt.</p>
+      </div>
+      <div class="fig">
+        <ol class="proto" id="stPsiSteps"></ol>
+        <div class="steps">
+          <button class="btn primary" id="stPsiNext" type="button">Schritt 1</button>
+          <button class="btn" id="stPsiReset" type="button">Von vorn</button>
+        </div>
+        <div class="wire" id="stPsiWire"></div>
+        <div class="pstep">
+          <div class="pcard"><div class="who"><h3>Arbeitgeber A</h3><span class="flag">CH · Schlüssel a</span></div><div id="stPsiEmp"></div><div class="knows" id="stPsiEmpKnows"></div></div>
+          <div class="pcard"><div class="who"><h3>Parkhaus Konstanz</h3><span class="flag">DE · Schlüssel b</span></div><div id="stPsiPark"></div><div class="knows" id="stPsiParkKnows"></div></div>
+        </div>
+        <div id="stPsiResult"></div>
+      </div>
+      <details class="math">
+        <summary>Die Rechnung dahinter, mit kleinen Zahlen</summary>
+        <div class="body">
+          <p>Ein Kennzeichen wird zuerst in eine Zahl <i>x</i> übersetzt. Verblinden heißt: <i>x</i> hoch Schlüssel, und davon nur der Rest beim Teilen durch eine Primzahl <i>p</i>. Weil (x<sup>a</sup>)<sup>b</sup> = x<sup>a·b</sup> = (x<sup>b</sup>)<sup>a</sup> ist, spielt die Reihenfolge keine Rolle.</p>
+          <div class="ctl-row" style="flex-wrap:wrap;gap:8px 14px">
+            <label class="note">x <input type="number" id="mx" value="5" min="2" max="22"></label>
+            <label class="note">a <input type="number" id="ma" value="3" min="1" max="21"></label>
+            <label class="note">b <input type="number" id="mb" value="7" min="1" max="21"></label>
+            <span class="note">p = 23</span>
+          </div>
+          <div class="eq" id="mEq"></div>
+          <p>Rückwärts ist es schwer: Aus dem Ergebnis auf <i>x</i> zu kommen, ohne den Schlüssel zu kennen, heißt „diskreter Logarithmus“. Bei p = 23 geht das noch durch Probieren. Diese Demo rechnet mit einer Primzahl mit 27 Stellen, ein echter Einsatz mit elliptischen Kurven (Curve25519). Dort ist Probieren aussichtslos.</p>
+        </div>
+      </details>
+    </article>
+
+    <article class="chapter" id="ch-dp">
+      <div class="eyebrow">5 · Trick 2: Differential Privacy</div>
+      <h2>Auch eine einzelne Zahl kann etwas verraten</h2>
+      <div class="prose">
+        <p>Für die Verkehrsplanung reicht die Gesamtzahl nicht. Man will wissen, <i>woher</i> die Park-&amp;-Walk-Pendelnden kommen. Also schickt der Arbeitgeber seine Werte nach Wohnort gruppiert, und das Protokoll zählt Treffer je Wohnort.</p>
+        <p>Jetzt gibt es ein Problem. In Allensbach wohnt nur eine einzige Beschäftigte, P-1187. Steht bei Allensbach „1 Treffer“, weiß der Arbeitgeber, dass sie im Parkhaus Konstanz parkt. Er hat keine Liste gesehen, und trotzdem hat er etwas über eine einzelne Person erfahren.</p>
+        <p>Die Abhilfe: Vor dem Veröffentlichen kommt auf jede Zahl ein kleiner Zufallswert. Wie viel, regelt ein Parameter <b>ε</b> (Epsilon). Kleines ε heißt mehr Rauschen und mehr Schutz.</p>
+      </div>
+      <div class="fig">
+        <div class="ctl-row" style="flex-wrap:wrap;gap:8px 16px">
+          <label for="stEps" class="note" style="font-weight:600">Datenschutz-Budget</label>
+          <input id="stEps" type="range" min="0" max="100" value="59">
+          <span class="eps-val num" id="stEpsVal"></span>
+          <button class="btn" id="stDraw" type="button">Neu würfeln</button>
+        </div>
+        <div class="tbl-scroll"><table id="stDpTbl"></table></div>
+        <div>
+          <div class="eyebrow" style="margin-bottom:4px">Was die veröffentlichte Zahl für Allensbach verrät</div>
+          <svg class="spark" id="stDpCurve" viewBox="0 0 560 170" role="img" aria-label="Verteilung der veröffentlichten Zahl mit und ohne die Person"></svg>
+          <p class="cap" id="stDpCap"></p>
+        </div>
+      </div>
+      <p id="stDpScale"></p>
+    </article>
+
+    <article class="chapter" id="ch-sum">
+      <div class="eyebrow">6 · Trick 3: Sichere Summe</div>
+      <h2>Summen aus Zufallsteilen</h2>
+      <div class="prose">
+        <p>Für die Verkehrsmittelanteile muss niemand Personen verknüpfen: Wer Bahn fährt, fährt nicht gleichzeitig Bus. Es reicht, Zählungen zu addieren. Aber auch das ist heikel. Bahn und Bus konkurrieren um Ausschreibungen und wollen ihre Fahrgastzahlen an der Grenze nicht einzeln zeigen. Veröffentlicht werden soll nur „Bus/Bahn zusammen“.</p>
+        <p>Die Lösung: Jede Seite zerlegt ihre Zahl in drei Zufallszahlen, die zusammen wieder die Zahl ergeben, und schickt je eine an drei verschiedene Rechenstellen. Gerechnet wird wie auf einer Uhr mit 1000 Stunden: 950 + 100 ergibt 50. Darum sagt eine einzelne Teilzahl gar nichts.</p>
+      </div>
+      <div class="fig">
+        <div class="tbl-scroll"><table class="sum-tbl" id="stSum"></table></div>
+        <div class="steps"><button class="btn" id="stSumRe" type="button">Neu aufteilen</button><span class="note">Die Teile ändern sich jedes Mal, die Summe bleibt.</span></div>
+      </div>
+      <p>Jede Rechenstelle (etwa Statistik Baden-Württemberg, Statistik Thurgau, eine Hochschule) sieht nur Zufallszahlen. Erst wenn alle drei ihre Teilsummen zusammenlegen, entsteht ein Ergebnis, und das ist nur die Summe. Solange nicht alle drei Stellen zusammenarbeiten, um zu betrügen, erfährt niemand eine Einzelzahl.</p>
+    </article>
+
+    <article class="chapter" id="ch-alle">
+      <div class="eyebrow">7 · Alles zusammen</div>
+      <h2>Vom Spielzeug zum Dashboard</h2>
+      <p>Im Dashboard laufen dieselben drei Verfahren mit rund 5 000 erfundenen Pendelnden zwischen dem Landkreis Konstanz und dem Thurgau. Dazu kommt ein Schätzverfahren (IPF), das aus veröffentlichten Randsummen der amtlichen Statistik eine Tabelle „von wo nach wo“ macht.</p>
+      <div class="fig map3">
+        <div class="r h"><span>Frage</span><span>Wer hat die Daten</span><span>Verfahren</span><span>Im Dashboard</span></div>
+        <div class="r"><span>Wie viele fahren Auto, Bahn, Rad …?</span><span>Zählstellen, Bahn, Bus</span><span>Sichere Summe</span><span><button type="button" class="linkbtn" data-tabgo="ebene1">E1 Ohne Verknüpfung</button></span></div>
+        <div class="r"><span>Von wo nach wo?</span><span>Amtliche Statistik (offen)</span><span>IPF aus Randsummen</span><span><button type="button" class="linkbtn" data-tabgo="ebene1">E1 Ohne Verknüpfung</button></span></div>
+        <div class="r"><span>Wer macht Park &amp; Walk, wer nutzt sein Jobticket?</span><span>Arbeitgeber × Parkhaus bzw. Verkehrsbetrieb</span><span>PSI + Differential Privacy</span><span><button type="button" class="linkbtn" data-tabgo="ebene2">E2 Mit Verknüpfung</button></span></div>
+      </div>
+      <p>Der Überblick vergleicht drei Bilder: die Wahrheit, die nur der Zufallsgenerator kennt, die Schätzung nur aus Summen (Ebene 1) und die Schätzung mit den privaten Schnittmengen (Ebene 1 + 2). Der Unterschied zwischen den beiden Schätzungen ist das, was die Verknüpfung zusätzlich bringt, ohne dass ein einziger Rohdatensatz sein Haus verlässt.</p>
+      <div class="cta">
+        <button class="btn primary" type="button" data-tabgo="ueberblick">Zum Dashboard</button>
+        <button class="btn" type="button" data-tabgo="halter">Wer welche Daten hat</button>
+      </div>
+    </article>
+   </div>
+  </section>
+
   <!-- ÜBERBLICK -->
-  <section id="view-ueberblick" role="tabpanel" aria-labelledby="tab-ueberblick">
+  <section id="view-ueberblick" role="tabpanel" aria-labelledby="tab-ueberblick" hidden>
     <div class="kpis" id="kpis"></div>
     <div class="ov-grid">
       <div class="panel">
@@ -286,13 +541,13 @@ footer{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);font-si
 
   <!-- DATENHALTER -->
   <section id="view-halter" role="tabpanel" aria-labelledby="tab-halter" hidden>
-    <p class="lede">Jeder Halter sieht nur seinen Ausschnitt. Die Tabellen zeigen, was im Haus liegt (aus den Testdaten), darunter, was bei der gemeinsamen Berechnung das Haus verlässt. Kein Halter gibt eine Liste heraus, die ein anderer lesen könnte.</p>
+    <p class="lede">Jeder Halter sieht nur seinen Ausschnitt. Die Tabellen zeigen, was im Haus liegt (aus den Testdaten), darunter, was bei der gemeinsamen Berechnung das Haus verlässt. Kein Halter gibt eine Liste heraus, die ein anderer lesen könnte. <button type="button" class="linkbtn" data-goto="ch-silos">Warum das nicht erlaubt ist</button></p>
     <div class="holders" id="holders"></div>
   </section>
 
   <!-- EBENE 1 -->
   <section id="view-ebene1" role="tabpanel" aria-labelledby="tab-ebene1" hidden>
-    <p class="lede">Autos, Bahnfahrgäste, Radfahrende und Fußgänger an der Grenze sind verschiedene Menschen. Ihre Zählungen addiert ergeben die Verkehrsmittelanteile, ohne dass irgendetwas verknüpft wird. Die sichere Summe sorgt nur dafür, dass Bahn und Bus ihre Fahrgastzahlen nicht einzeln offenlegen. Aus Randsummen schätzt IPF dann die Quelle-Ziel-Ströme.</p>
+    <p class="lede">Autos, Bahnfahrgäste, Radfahrende und Fußgänger an der Grenze sind verschiedene Menschen. Ihre Zählungen addiert ergeben die Verkehrsmittelanteile, ohne dass irgendetwas verknüpft wird. Die sichere Summe sorgt nur dafür, dass Bahn und Bus ihre Fahrgastzahlen nicht einzeln offenlegen. Aus Randsummen schätzt IPF dann die Quelle-Ziel-Ströme. <button type="button" class="linkbtn" data-goto="ch-sum">Die sichere Summe Schritt für Schritt</button></p>
     <div class="two">
       <div class="panel">
         <div class="panel-head"><h2>Sichere Summe über drei Rechenstellen</h2>
@@ -330,7 +585,7 @@ footer{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);font-si
 
   <!-- EBENE 2 -->
   <section id="view-ebene2" role="tabpanel" aria-labelledby="tab-ebene2" hidden>
-    <p class="lede">Wo Daten je Person vorliegen, zählt private Schnittmengenberechnung (PSI) nur, wie viele Einträge zwei Listen gemeinsam haben, getrennt nach Wohnort-Gruppe. Keine Seite sieht die Liste der anderen. Veröffentlicht wird jede Zahl erst mit kontrolliertem Rauschen (Differential Privacy).</p>
+    <p class="lede">Wo Daten je Person vorliegen, zählt private Schnittmengenberechnung (PSI) nur, wie viele Einträge zwei Listen gemeinsam haben, getrennt nach Wohnort-Gruppe. Keine Seite sieht die Liste der anderen. Veröffentlicht wird jede Zahl erst mit kontrolliertem Rauschen (Differential Privacy). <button type="button" class="linkbtn" data-goto="ch-psi">PSI und Rauschen Schritt für Schritt</button></p>
     <div class="two">
       <div class="panel">
         <div class="panel-head"><h2>Schnittmenge zählen</h2></div>
@@ -975,25 +1230,176 @@ function initHash(){
   renderHash();$('#hashInfo').textContent='';$('#hashProg').style.width='0';$('#hashGo').disabled=false;
 }
 function renderHash(){$('#hashList').innerHTML=hashTargets.map(t=>`<div><span class="h">${t.hex}</span><span class="p ${t.found?'found':''}">${t.found?esc(t.found):'?'}</span></div>`).join('')}
-async function runHash(){
-  if(hashBusy)return;hashBusy=true;$('#hashGo').disabled=true;
+// probiert KN-A 1 bis KN-ZZ 9999
+async function crackKN(targets,onHit,onTick){
   const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ',combos=[];for(const a of L)combos.push(a);for(const a of L)for(const b of L)combos.push(a+b);
-  const map=new Map();hashTargets.forEach(t=>{t.found=null;const w0=parseInt(t.hex.slice(0,8),16);map.set(w0,t)});renderHash();
-  const buf=new Uint8Array(64),out=new Uint32Array(8),t0=performance.now();let n=0,left=hashTargets.length;
+  const map=new Map();targets.forEach(t=>{t.found=null;map.set(parseInt(t.hex.slice(0,8),16),t)});
+  const buf=new Uint8Array(64),out=new Uint32Array(8),t0=performance.now();let n=0,left=targets.length;
   for(let ci=0;ci<combos.length&&left>0;ci++){
     const pre='KN-'+combos[ci]+' ';for(let i=0;i<pre.length;i++)buf[i]=pre.charCodeAt(i);const pl=pre.length;
     for(let num=1;num<=9999;num++){
       let len=pl;if(num>=1000)buf[len++]=48+((num/1000)|0);if(num>=100)buf[len++]=48+(((num/100)|0)%10);if(num>=10)buf[len++]=48+(((num/10)|0)%10);buf[len++]=48+num%10;
       sha256Bytes(buf,len,out);n++;
       const t=map.get(out[0]);
-      if(t&&!t.found){const s=String.fromCharCode(...buf.subarray(0,len));if(sha256Hex(s)===t.hex){t.found=s;left--;renderHash()}}
+      if(t&&!t.found){const s=String.fromCharCode(...buf.subarray(0,len));if(sha256Hex(s)===t.hex){t.found=s;left--;onHit(t)}}
     }
-    if(ci%12===0){$('#hashProg').style.width=(ci/combos.length*100)+'%';$('#hashInfo').textContent=`${fmt(n)} Kennzeichen probiert …`;await new Promise(r=>setTimeout(r,0))}
+    if(ci%12===0){onTick(n,ci/combos.length);await new Promise(r=>setTimeout(r,0))}
   }
-  const dt=(performance.now()-t0)/1000;$('#hashProg').style.width='100%';
+  return {n,dt:(performance.now()-t0)/1000};
+}
+async function runHash(){
+  if(hashBusy)return;hashBusy=true;$('#hashGo').disabled=true;
+  hashTargets.forEach(t=>t.found=null);renderHash();
+  const {n,dt}=await crackKN(hashTargets,renderHash,(n,f)=>{$('#hashProg').style.width=(f*100)+'%';$('#hashInfo').textContent=`${fmt(n)} Kennzeichen probiert …`});
+  $('#hashProg').style.width='100%';
   const rate=n/dt;
   $('#hashInfo').innerHTML=`${hashTargets.filter(t=>t.found).length} von ${hashTargets.length} Kennzeichen gefunden: ${fmt(n)} Versuche in ${dt.toFixed(1).replace('.',',')} s (${fmt(rate/1e6*10)/10} Mio. pro Sekunde, ein Browser-Tab). Eine Grafikkarte schafft rund 10 Milliarden pro Sekunde. Alle rund 26 Mio. Schweizer Kennzeichen dauern dort Millisekunden. Darum: Verblindung mit geheimen Schlüsseln (PSI) oder ein Schlüssel-HMAC bei einer dritten Stelle, nie einfache Hashes.`;
   hashBusy=false;$('#hashGo').disabled=false;$('#hashGo').textContent='Noch einmal';
+}
+
+// ---------- Einführung ----------
+const T_PARK=[['KN-AB 412','07:12','9,1 h',1],['TG 48213','07:40','8,6 h',1],['KN-M 87','10:05','1,2 h',0],['KN-LS 2207','06:58','8,9 h',1],['ZH 330118','13:20','2,5 h',0],['KN-R 5531','07:31','9,4 h',1],['FN-KT 90','08:02','0,8 h',0]];
+const T_HR=[['P-1041','Konstanz','KN-AB 412'],['P-1187','Allensbach','KN-LS 2207'],['P-1203','Radolfzell','KN-PZ 618'],['P-1310','Singen','KN-R 5531'],['P-1322','Kreuzlingen','TG 77120'],['P-1405','Konstanz','KN-HE 3009']];
+const T_PARKSET=new Set(T_PARK.filter(r=>r[3]).map(r=>r[0]));
+let peek=false;
+function renderSilos(){
+  const hit=p=>peek&&T_PARKSET.has(p)&&T_HR.some(r=>r[2]===p);
+  $('#siloPark').innerHTML=`<thead><tr><th>Kennzeichen</th><th>Einfahrt</th><th>Dauer</th></tr></thead><tbody>${T_PARK.map(r=>`<tr class="${hit(r[0])?'hl':''}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody>`;
+  $('#siloHR').innerHTML=`<thead><tr><th>Pers.-Nr.</th><th>Wohnort</th><th>Kennzeichen</th></tr></thead><tbody>${T_HR.map(r=>`<tr class="${hit(r[2])?'hl':''}"><td>${r[0]}</td><td>${esc(r[1])}</td><td>${r[2]}</td></tr>`).join('')}</tbody>`;
+  $('#siloPeekInfo').hidden=!peek;
+  $('#siloPeekInfo').textContent='Drei Treffer: KN-AB 412, KN-LS 2207 und KN-R 5531. TG 48213 parkt ebenfalls ganztags, arbeitet aber woanders. Genau diesen Blick auf beide Listen hätte gleichzeitig niemand haben dürfen. Ab jetzt rechnen wir so, dass er nicht nötig ist.';
+  $('#siloPeek').textContent=peek?'Wieder verbergen':'Trotzdem kurz spicken';
+}
+
+// Hash-Umkehr im Kleinen
+let stHash=[],stHashBusy=false;
+function renderStHash(){
+  $('#stHash').innerHTML=`<div class="head"><span>SHA-256 (weitergegeben)</span><span>Einfahrt</span><span>Dauer</span><span style="text-align:right">Klartext</span></div>`+
+    T_PARK.map((r,i)=>{const t=stHash[i];return`<div><span class="h">${t.hex}</span><span>${r[1]}</span><span>${r[2]}</span><span class="p ${t.found?'found':''}">${t.found?esc(t.found):t.kn?'?':'<span class="muted" style="font-weight:400">anderer Kreis</span>'}</span></div>`}).join('');
+}
+async function runStHash(){
+  if(stHashBusy)return;stHashBusy=true;$('#stHashGo').disabled=true;
+  const targets=stHash.filter(t=>t.kn);
+  const {n,dt}=await crackKN(targets,renderStHash,(n,f)=>{$('#stHashProg').style.width=(f*100)+'%';$('#stHashInfo').textContent=`${fmt(n)} Kennzeichen probiert …`});
+  $('#stHashProg').style.width='100%';
+  $('#stHashInfo').textContent=`Alle ${targets.length} Konstanzer Kennzeichen zurückgerechnet: ${fmt(n)} Versuche in ${dt.toFixed(1).replace('.',',')} Sekunden, in einem Browser-Tab. Die anderen Kreise gehen genauso schnell.`;
+  stHashBusy=false;$('#stHashGo').disabled=false;$('#stHashGo').textContent='Noch einmal';
+}
+
+// PSI im Kleinen
+const ST_PSI_STEPS=[
+  'Der Arbeitgeber verblindet seine 6 Kennzeichen mit a und schickt sie dem Parkhaus.',
+  'Das Parkhaus verblindet diese Werte ein zweites Mal mit b, mischt sie und schickt sie zurück.',
+  'Das Parkhaus verblindet seine eigenen Kennzeichen mit b und schickt sie dem Arbeitgeber.',
+  'Der Arbeitgeber verblindet diese Werte mit a. Jetzt sind beide Listen doppelt verblindet. Er zählt gleiche Werte.'];
+let sp=null;
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=rnd32()%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function stPsiInit(){
+  const a=randBig(),b=randBig();
+  const emp=T_HR.map(r=>{const g=hashToGroup(r[2]),ga=modpow(g,a);return{x:r[2],ga,gab:modpow(ga,b)}});
+  const par=T_PARK.filter(r=>r[3]).map(r=>{const g=hashToGroup(r[0]),gb=modpow(g,b);return{x:r[0],gb,gba:modpow(gb,a)}});
+  sp={step:0,emp,par,back:shuffle(emp.map(o=>o.gab))};
+  renderStPsi();
+}
+const short=v=>bh(v).slice(-7);
+const tok=(v,c,hit)=>`<span class="tok${c?' c':''}${hit?' hit':''}"${c?` style="--h:${Number(v%360n)}"`:''}>${short(v)}</span>`;
+function renderStPsi(){
+  const s=sp.step,done=s>=4;
+  $('#stPsiSteps').innerHTML=ST_PSI_STEPS.map((t,i)=>`<li class="${i<s?'done':i===s?'next':''}">${t}</li>`).join('');
+  $('#stPsiNext').textContent=done?'Fertig':`Schritt ${s+1}`;$('#stPsiNext').disabled=done;
+  const wire=['Noch ist nichts unterwegs. Beide haben ihre Liste und einen geheimen Schlüssel.',
+    '→ Arbeitgeber an Parkhaus: 6 mit a verblindete Werte',
+    '← Parkhaus an Arbeitgeber: dieselben 6 Werte, zusätzlich mit b verblindet, in neuer Reihenfolge',
+    '← Parkhaus an Arbeitgeber: 4 mit b verblindete Werte',
+    'Nichts mehr unterwegs. Der Arbeitgeber vergleicht zwei Listen von Zahlen.'][s];
+  $('#stPsiWire').innerHTML=`<span class="k">Leitung</span><span class="msg">${wire}</span>`;
+  const parSet=new Set(sp.par.map(o=>o.gba)),backSet=new Set(sp.back);
+  const row=(a,b,c)=>`<div><span>${a}</span><span class="off">${b}</span><span class="arr">${c?'→':''}</span><span>${c||''}</span></div>`;
+  // Arbeitgeber
+  let e=`<span class="k">Eigene Liste</span><div class="plist">${T_HR.map((r,i)=>row(r[2],esc(r[1]),s>=1?tok(sp.emp[i].ga):'')).join('')}</div>`;
+  if(s>=2)e+=`<span class="k">Zurückbekommen: eigene Werte, doppelt verblindet, gemischt</span><div class="toks">${sp.back.map(v=>tok(v,1,done&&parSet.has(v))).join('')}</div>`;
+  if(s>=3)e+=`<span class="k">Vom Parkhaus${done?', mit a nachverblindet':', mit b verblindet'}</span><div class="toks">${sp.par.map(o=>done?tok(o.gba,1,backSet.has(o.gba)):tok(o.gb)).join('')}</div>`;
+  $('#stPsiEmp').innerHTML=e;
+  // Parkhaus
+  let p=`<span class="k">Eigene Liste, nur Pendelmuster</span><div class="plist">${T_PARK.map(r=>r[3]?row(r[0],r[1],s>=3?tok(sp.par.find(o=>o.x===r[0]).gb):''):`<div class="off"><span>${r[0]}</span><span>${r[1]}</span><span></span><span>kein Pendelmuster</span></div>`).join('')}</div>`;
+  if(s>=1)p+=`<span class="k">Vom Arbeitgeber, mit a verblindet</span><div class="toks">${sp.emp.map(o=>tok(o.ga)).join('')}</div>`;
+  if(s>=2)p+=`<p class="note">mit b nachverblindet, gemischt und zurückgeschickt</p>`;
+  $('#stPsiPark').innerHTML=p;
+  const ek=['Kennt nur die eigene Liste und den Schlüssel a.','Hat noch nichts bekommen.',
+    'Hat 6 Werte zurück, kann sie aber keinem eigenen Eintrag mehr zuordnen: Die Reihenfolge ist gemischt, und b kennt er nicht.',
+    '4 Werte vom Parkhaus. Ohne b kann er nicht prüfen, welches Kennzeichen dahintersteckt.',
+    'Sieht: 3 Zahlen kommen in beiden Listen vor. Welche drei Beschäftigten das sind, sieht er nicht, weil seine Liste gemischt zurückkam.'];
+  const pk=['Kennt nur die eigene Liste und den Schlüssel b.',
+    'Hat 6 Zahlen bekommen. Ohne a kann es nicht ausprobieren, ob KN-AB 412 darunter ist.',
+    'Weiß jetzt: Der Arbeitgeber hat 6 Einträge. Mehr nicht.',
+    'Weiß weiterhin nur: 6 Einträge beim Arbeitgeber.',
+    'Erfährt nicht einmal das Ergebnis.'];
+  $('#stPsiEmpKnows').innerHTML=`<b>Was der Arbeitgeber weiß:</b> ${s===0?ek[0]:s===1?ek[1]:s===2?ek[2]:s===3?ek[2]+' '+ek[3]:ek[4]}`;
+  $('#stPsiParkKnows').innerHTML=`<b>Was das Parkhaus weiß:</b> ${pk[s]}`;
+  const n=sp.back.filter(v=>parSet.has(v)).length;
+  $('#stPsiResult').innerHTML=done?`<div class="callout" style="background:var(--surface-2);color:var(--ink)"><div class="result-big">${n} Treffer</div>Drei Beschäftigte von Arbeitgeber A parken ganztags im Parkhaus Konstanz. Das ist dieselbe Zahl wie beim Spicken, aber keine Seite hat die Liste der anderen gesehen. Gleiche Farbe heißt gleiche Zahl. Die Farben sind nur zur Veranschaulichung, der Arbeitgeber vergleicht Zahlen.</div>`:'';
+}
+function renderMath(){
+  const p=23n,g=k=>BigInt(Math.max(1,Math.min(22,parseInt($(k).value,10)||1)));
+  const x=g('#mx'),a=g('#ma'),b=g('#mb');
+  const pw=(B,E)=>{let r=1n;B%=p;while(E>0n){if(E&1n)r=r*B%p;B=B*B%p;E>>=1n}return r};
+  const xa=pw(x,a),xb=pw(x,b);
+  $('#mEq').innerHTML=`<span>erst a, dann b: ${x}<sup>${a}</sup> mod 23 = ${xa}, &nbsp; ${xa}<sup>${b}</sup> mod 23 = <b>${pw(xa,b)}</b></span><span>erst b, dann a: ${x}<sup>${b}</sup> mod 23 = ${xb}, &nbsp; ${xb}<sup>${a}</sup> mod 23 = <b>${pw(xb,a)}</b></span>`;
+}
+
+// Rauschen im Kleinen
+const DP_GROUPS=(()=>{const m=new Map();for(const r of T_HR){const g=m.get(r[1])||{n:0,hit:0};g.n++;if(T_PARKSET.has(r[2]))g.hit++;m.set(r[1],g)}return[...m].map(([name,g])=>({name,...g}))})();
+let stEps=1,dpDraw=[];
+const stEpsFrom=v=>.1*Math.pow(50,v/100);
+function drawDp(){dpDraw=DP_GROUPS.map(()=>laplace(Math.random()-.5,1/stEps))}
+function renderDp(){
+  $('#stEpsVal').textContent='ε = '+epsStr(stEps);
+  $('#stDpTbl').innerHTML=`<thead><tr><th>Wohnort</th><th class="r">Beschäftigte</th><th class="r">Treffer exakt <span class="muted" style="font-weight:400">(nur in der Simulation)</span></th><th class="r">veröffentlicht</th></tr></thead><tbody>${DP_GROUPS.map((g,i)=>`<tr${g.name==='Allensbach'?' style="font-weight:650"':''}><td>${esc(g.name)}</td><td class="r num">${g.n}</td><td class="r num muted">${g.hit}</td><td class="r num">${Math.max(0,Math.round(g.hit+dpDraw[i]))}</td></tr>`).join('')}</tbody>`;
+  // zwei Laplace-Dichten: Person parkt (1) oder nicht (0)
+  const svg=$('#stDpCurve');svg.innerHTML='';
+  const W=560,H=170,pl=12,pr=12,pt=14,pb=26,lo=-5,hi=6,b=1/stEps,ymax=1/(2*b);
+  const x=v=>pl+(v-lo)/(hi-lo)*(W-pl-pr),y=v=>pt+(1-v/ymax)*(H-pt-pb);
+  const dens=(v,mu)=>Math.exp(-Math.abs(v-mu)/b)/(2*b);
+  for(let v=lo;v<=hi;v++){S('line',{x1:x(v),x2:x(v),y1:H-pb,y2:H-pb+4,style:'stroke:var(--line-strong)'},svg);const t=S('text',{x:x(v),y:H-8,'text-anchor':'middle',style:'fill:var(--muted);font-size:11px;font-family:var(--sans)'},svg);t.textContent=v}
+  S('line',{x1:pl,x2:W-pr,y1:H-pb,y2:H-pb,style:'stroke:var(--line-strong)'},svg);
+  for(const[mu,col]of[[0,'--under'],[1,'--m-pw']]){
+    let d=`M${x(lo).toFixed(1)},${y(0).toFixed(1)}`;for(let i=0;i<=220;i++){const v=lo+(hi-lo)*i/220;d+=`L${x(v).toFixed(1)},${y(dens(v,mu)).toFixed(1)}`}d+=`L${x(hi).toFixed(1)},${y(0).toFixed(1)}Z`;
+    S('path',{d,style:`fill:var(${col});fill-opacity:.22;stroke:var(${col});stroke-width:2`},svg);
+  }
+  const lab=(txt,col,xx,yy,anc)=>{const t=S('text',{x:xx,y:yy,'text-anchor':anc,style:`fill:var(${col});font-size:12px;font-weight:700;font-family:var(--sans)`},svg);t.textContent=txt};
+  lab('parkt nicht (0)','--under',x(0)-8,pt+10,'end');lab('parkt im Parkhaus (1)','--m-pw',x(1)+8,pt+10,'start');
+  const ratio=Math.exp(stEps);
+  $('#stDpCap').textContent=`Die zwei Kurven zeigen, welche Zahl veröffentlicht werden könnte, je nachdem, ob P-1187 im Parkhaus parkt oder nicht. Je stärker sie sich überlappen, desto weniger lässt sich aus der Zahl schließen. Jeder Wert ist unter der einen Annahme höchstens ${ratio.toFixed(1).replace('.',',')}-mal so wahrscheinlich wie unter der anderen (e hoch ε).`;
+  const dev=b;
+  $('#stDpScale').innerHTML=`Der Preis ist Genauigkeit. Bei ε = ${epsStr(stEps)} liegt die veröffentlichte Zahl im Mittel um etwa ${dev.toFixed(1).replace('.',',')} daneben. Für eine Gruppe mit einem Treffer ist das viel, genau so ist es gewollt. Für eine Gruppe mit 300 Pendelnden sind es ${(dev/300*100).toFixed(1).replace('.',',')} %, also kaum der Rede wert. Darum funktioniert das Verfahren für Planung gut, für das Ausspähen Einzelner nicht. Das Dashboard veröffentlicht zusätzlich keine Werte unter 10.`;
+}
+
+// Sichere Summe im Kleinen
+const SUM_HOLDERS=[['Bahn',412],['Bus',230]];
+let sumShares=null;
+function splitSum(){sumShares=SUM_HOLDERS.map(([,v])=>{const a=rnd32()%1000,b=rnd32()%1000;return[a,b,((v-a-b)%1000+2000)%1000]})}
+function renderSum(){
+  const p3=v=>String(v).padStart(3,'0');
+  const col=k=>sumShares.reduce((s,r)=>(s+r[k])%1000,0);
+  const tot=(col(0)+col(1)+col(2))%1000;
+  $('#stSum').innerHTML=`<thead><tr><th>Halter</th><th class="r">Eigene Zahl</th><th class="r">an Rechenstelle 1</th><th class="r">an Rechenstelle 2</th><th class="r">an Rechenstelle 3</th></tr></thead><tbody>
+  ${SUM_HOLDERS.map(([n,v],i)=>`<tr><td class="lbl">${n}</td><td class="r"><b>${v}</b><span class="lock" style="display:block;font-family:var(--sans);font-size:10.5px;color:var(--muted)">bleibt im Haus</span></td>${sumShares[i].map(x=>`<td class="r">${p3(x)}</td>`).join('')}</tr>`).join('')}
+  <tr class="tot"><td class="lbl">Teilsumme je Rechenstelle</td><td></td>${[0,1,2].map(k=>`<td class="r">${p3(col(k))}</td>`).join('')}</tr>
+  <tr class="tot"><td class="lbl">Zusammengelegt</td><td class="r" colspan="4" style="text-align:left">${p3(col(0))} + ${p3(col(1))} + ${p3(col(2))} = ${col(0)+col(1)+col(2)}, auf der 1000er-Uhr: <b>${tot} Fahrgäste Bus/Bahn</b></td></tr></tbody>`;
+}
+
+function initStory(){
+  renderSilos();$('#siloPeek').addEventListener('click',()=>{peek=!peek;renderSilos()});
+  stHash=T_PARK.map(r=>({hex:sha256Hex(r[0]),kn:r[0].startsWith('KN-'),found:null}));renderStHash();
+  $('#stHashGo').addEventListener('click',runStHash);
+  stPsiInit();
+  $('#stPsiNext').addEventListener('click',()=>{if(sp.step<4){sp.step++;renderStPsi()}});
+  $('#stPsiReset').addEventListener('click',stPsiInit);
+  for(const k of ['#mx','#ma','#mb'])$(k).addEventListener('input',renderMath);renderMath();
+  stEps=stEpsFrom(+$('#stEps').value);drawDp();renderDp();
+  $('#stEps').addEventListener('input',e=>{stEps=stEpsFrom(+e.target.value);renderDp()});
+  $('#stDraw').addEventListener('click',()=>{drawDp();renderDp()});
+  splitSum();renderSum();$('#stSumRe').addEventListener('click',()=>{splitSum();renderSum()});
 }
 
 // ---------- Steuerung ----------
@@ -1003,9 +1409,13 @@ function renderChips(){
   $('#modeChips').innerHTML=MODES.map((m,i)=>`<button type="button" class="chip" data-i="${i}" aria-pressed="${!!st.modes[i]}"><i class="sw" style="background:var(${MODE_VAR[i]})"></i>${m.label}</button>`).join('');
   document.querySelectorAll('#modeChips .chip').forEach(c=>c.addEventListener('click',()=>{const i=+c.dataset.i;st.modes[i]=st.modes[i]?0:1;if(!st.modes.some(Boolean))st.modes[i]=1;renderChips();drawMap()}));
 }
+const TABS=['story','ueberblick','halter','ebene1','ebene2'];
+function gotoTab(t){selectTab(t);try{history.replaceState(null,'','#'+t)}catch(e){}$('nav.tabs').scrollIntoView({block:'start'})}
+function gotoChapter(id){selectTab('story');try{history.replaceState(null,'','#story')}catch(e){}document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'})}
 function selectTab(t){
   st.tab=t;document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t)));
-  for(const v of ['ueberblick','halter','ebene1','ebene2'])$('#view-'+v).hidden=v!==t;
+  for(const v of TABS)$('#view-'+v).hidden=v!==t;
+  $('header .controls').hidden=t==='story';
   store('gp-tab',t);hideTip();
 }
 let epsRaf=0;
@@ -1040,12 +1450,14 @@ function init(){
   $('#psiAll').addEventListener('click',async()=>{while(psi.step<4){await psiStep()}});
   $('#psiReset').addEventListener('click',()=>{if(!psiBusy)psiInit()});
   $('#hashGo').addEventListener('click',runHash);
+  document.addEventListener('click',e=>{const g=e.target.closest('[data-goto]'),t=e.target.closest('[data-tabgo]');if(g)gotoChapter(g.dataset.goto);else if(t)gotoTab(t.dataset.tabgo)});
+  initStory();
   const rerenderTheme=()=>{if(M){renderIPF()}};
   try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',rerenderTheme)}catch(e){}
   new MutationObserver(rerenderTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   rebuild();
   const h=(location.hash||'').slice(1),saved=store('gp-tab');
-  const t=['ueberblick','halter','ebene1','ebene2'].includes(h)?h:(['ueberblick','halter','ebene1','ebene2'].includes(saved)?saved:'ueberblick');
+  const t=TABS.includes(h)?h:(TABS.includes(saved)?saved:'story');
   selectTab(t);
 }
 init();
